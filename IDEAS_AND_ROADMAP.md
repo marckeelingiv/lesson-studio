@@ -4,7 +4,6 @@
 
 - **D1 (Post-Production Pipeline over Desktop GUI):** Do not build a custom native Linux desktop app (GTK4, PySide6, or Electron) to replace OBS or replicate Screen Studio live. Use **OBS** (or `gpu-screen-recorder`) for reliable raw capture, **faster-whisper** for word-level transcription, an **AI editorial planner** emitting structured JSON (`edl.json`), and **FFmpeg + Remotion** to render cuts, captions, React slides, code cards, icons/callouts, and animated cursor highlights.
   - Why: Remotion renders React components to video, keeping slides, captions, callouts, and cursor highlights in one codebase that coding agents can edit directly. The hard problem is reliable retake detection and visual polish, not window management.
-  - `lesson_studio/` stays in the repo as an optional, zero-dependency local web stage and presenter console for structured walkthroughs.
 
 ## End-to-End Pipeline Sketch
 

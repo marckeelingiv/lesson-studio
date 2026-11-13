@@ -185,7 +185,7 @@ class TestTranscriptAndPlanning(unittest.TestCase):
                 start=0.5,
                 duration=3.0,
                 title="Four steps",
-                subtitle="Redpanda to MCP",
+                subtitle="Transcribe to Render",
                 value="01 / ARCHITECTURE",
             ),
             GraphicCue(
@@ -193,9 +193,9 @@ class TestTranscriptAndPlanning(unittest.TestCase):
                 type="code_card",
                 start=4.0,
                 duration=3.5,
-                title="metrics.yml",
-                subtitle="Semantic layer",
-                value="SELECT sum(revenue) FROM fct_orders",
+                title="cli.py",
+                subtitle="Post-production CLI",
+                value="uv --project video_pipeline run python video_pipeline/src/cli.py run take.mp4",
             ),
             GraphicCue(
                 id="gfx_cursor",
