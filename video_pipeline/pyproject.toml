@@ -1,0 +1,12 @@
+[project]
+name = "ai-video-pipeline"
+version = "0.1.0"
+description = "Transcript-first agentic video editing and programmatic motion graphics pipeline"
+requires-python = ">=3.13"
+dependencies = [
+    "av>=11,<19", # faster-whisper 1.2 uses metadata_errors, removed in PyAV 19.
+    "faster-whisper>=1.1.0",
+    "litellm>=1.60.0",
+    "pydantic>=2.10.0",
+    "typer>=0.15.0",
+]

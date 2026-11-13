@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "title": "From event to answer",
+  "disclosure": "LOCAL PORTFOLIO SANDBOX · SYNTHETIC DATA",
+  "scenes": [
+    {
+      "type": "slide",
+      "kicker": "01 / THE QUESTION",
+      "title": "A purchase becomes an answer.",
+      "body": "Follow one business question through a local data platform.",
+      "points": ["Business events → defined metrics → AI-assisted exploration"],
+      "seconds": 12,
+      "notes": "How does a purchase at an arena become a number an AI assistant can query? I built a local data platform to follow that journey.\nLead with a verified answer or chart if you have it ready; do not invent a result.",
+      "evidence": "Rehearse one working revenue question. Replace this slide with a captured result if available."
+    },
+    {
+      "type": "screen",
+      "kicker": "02 / THE EVENT",
+      "title": "Start with a synthetic purchase.",
+      "seconds": 13,
+      "notes": "This is simulated data. Python generates business events, including arena purchases, which enter the pipeline through Redpanda.\nChoose the VS Code window or Redpanda Console tab before recording. Show one real generated event.",
+      "evidence": "An actual generated pos_transactions event. No customer data or production claims."
+    },
+    {
+      "type": "slide",
+      "kicker": "03 / THE JOURNEY",
+      "title": "Four steps. One data story.",
+      "body": "Redpanda → MinIO → DuckDB + dbt → MCP",
+      "points": ["Buffer events as Parquet", "Transform analytical models", "Expose defined business metrics"],
+      "seconds": 20,
+      "notes": "The buffer writes events as Parquet to MinIO. DuckDB reads that data, and dbt transforms it into analytical models and defined metrics.\nKeep this at the business-flow level; the next scene shows evidence.",
+      "evidence": "Explain the implemented path; avoid implying that this demo traces a single event ID end to end."
+    },
+    {
+      "type": "screen",
+      "kicker": "04 / THE DEFINITION",
+      "title": "Define what the number means.",
+      "seconds": 25,
+      "notes": "The important part is defining what the number means. Here is the transformation and metric behind the answer.\nIn VS Code, show the actual dbt model and semantic metric used by your chosen query. Explain its grain, aggregation, and one boundary.",
+      "evidence": "A checked-in dbt model and metric definition supporting the demonstrated question."
+    },
+    {
+      "type": "screen",
+      "kicker": "05 / THE ANSWER",
+      "title": "Ask through a defined metric.",
+      "seconds": 25,
+      "notes": "Through my MCP server, an assistant can discover available metrics and query them. Here is the result using the metric we just inspected.\nShow a real discovery and query interaction. Pause for the viewer to read the result. Capture the assistant window or tab.",
+      "evidence": "A successful MCP interaction and result. Rehearse beforehand; do not use placeholder numbers."
+    },
+    {
+      "type": "slide",
+      "kicker": "06 / THE TRADEOFF",
+      "title": "Make the decisions visible.",
+      "body": "Data engineering. Analytics modeling. Local infrastructure. Practical AI integration.",
+      "points": ["Next lesson: why DuckDB, and when to choose something else"],
+      "seconds": 20,
+      "notes": "This project brings together data engineering, analytics modeling, local infrastructure, and AI integration. Next, I will show one design tradeoff: why I chose DuckDB.\nLeave one second of silence before ending the recording.",
+      "evidence": "Keep the local, synthetic scope explicit."
+    }
+  ]
+}

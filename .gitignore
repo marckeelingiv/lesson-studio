@@ -1,0 +1,11 @@
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+video_pipeline/workspace/
+video_pipeline/renderer/public/
+*.mp4
+*.webm
+*.mkv
+*.mov
+*.wav
