@@ -114,6 +114,7 @@ class EditDecisionList(BaseModel):
     """Structured cut plan and motion graphic cues produced by the editorial planner."""
 
     source_path: str
+    camera_path: str | None = None
     fps: float
     width: int
     height: int
@@ -135,6 +136,7 @@ class TimelineManifest(BaseModel):
     """Props payload passed to the Remotion renderer."""
 
     videoFile: str
+    cameraFile: str | None = None
     fps: float
     width: int
     height: int

@@ -14,6 +14,7 @@ if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
 
 from assemble import assemble_rough_cut, remap_timeline  # noqa: E402
+from cursor_events import CursorEventLog, record_hyprland_cursor  # noqa: E402
 from export_nle import export_fcpxml  # noqa: E402
 from ingest import extract_audio, probe_video  # noqa: E402
 from planner import generate_edl  # noqa: E402
@@ -27,6 +28,34 @@ DEFAULT_WORKSPACE = Path(__file__).resolve().parent.parent / "workspace"
 
 def _project_dir(video_path: Path, out_dir: Optional[Path]) -> Path:
     return out_dir if out_dir is not None else DEFAULT_WORKSPACE / video_path.stem
+
+
+def _opt_path(value: Optional[Path]) -> Optional[Path]:
+    """Return value as Path when set, ignoring Typer OptionInfo defaults in direct Python calls."""
+    if isinstance(value, Path):
+        return value
+    if isinstance(value, str):
+        return Path(value)
+    return None
+
+
+@app.command("record-cursor")
+def record_cursor(
+    out_json: Path = typer.Option(Path("events.json"), "--out", "-o", help="Output cursor events JSON path."),
+    duration: float = typer.Option(10.0, "--duration", help="Recording duration in seconds."),
+    interval: float = typer.Option(0.1, "--interval", help="Polling interval in seconds."),
+    width: int = typer.Option(1920, "--width", help="Screen width in pixels."),
+    height: int = typer.Option(1080, "--height", help="Screen height in pixels."),
+) -> None:
+    """Record Hyprland cursor movements and focus clicks into an events JSON log."""
+    log = record_hyprland_cursor(
+        output_path=out_json,
+        duration_sec=duration,
+        interval_sec=interval,
+        width=width,
+        height=height,
+    )
+    typer.echo(f"Recorded {len(log.events)} cursor events -> {out_json}")
 
 
 @app.command()
@@ -86,10 +115,23 @@ def plan(
     model: str = typer.Option("gpt-4o-mini", "--model", "-m", help="LiteLLM model, opencode, or opencode/<provider>/<model>."),
     heuristic: bool = typer.Option(False, "--heuristic", help="Use deterministic heuristic planner."),
     instructions: Optional[str] = typer.Option(None, "--instructions", help="Extra editorial prompt."),
+    events: Optional[Path] = typer.Option(None, "--events", help="Optional cursor events.json log."),
 ) -> None:
     """Generate a structured EditDecisionList (edl.json) from transcript.json."""
     bundle = TranscriptBundle.model_validate_json(transcript_json.read_text(encoding="utf-8"))
-    edl = generate_edl(bundle, model=model, heuristic=heuristic, instructions=instructions)
+    events_path = _opt_path(events)
+    cursor_log = (
+        CursorEventLog.model_validate_json(events_path.read_text(encoding="utf-8"))
+        if events_path is not None
+        else None
+    )
+    edl = generate_edl(
+        bundle,
+        model=model,
+        heuristic=heuristic,
+        instructions=instructions,
+        cursor_log=cursor_log,
+    )
     dest = out_edl or transcript_json.parent / "edl.json"
     dest.write_text(edl.model_dump_json(indent=2), encoding="utf-8")
     kept_dur = sum(s.end - s.start for s in edl.kept_segments)
@@ -104,6 +146,7 @@ def assemble(
     edl_json: Path = typer.Argument(..., exists=True, help="Path to edl.json."),
     transcript_json: Optional[Path] = typer.Option(None, "--transcript", "-t"),
     out_dir: Optional[Path] = typer.Option(None, "--out-dir", "-o"),
+    camera: Optional[Path] = typer.Option(None, "--camera", help="Optional separate camera video track."),
 ) -> None:
     """Assemble rough_cut.mp4 with FFmpeg and remap captions into timeline_manifest.json."""
     work = out_dir or edl_json.parent
@@ -115,7 +158,26 @@ def assemble(
     meta = probe_video(Path(edl.source_path))
     assemble_rough_cut(Path(edl.source_path), edl, rough_cut, has_audio=meta.has_audio)
 
-    manifest = remap_timeline(bundle, edl, video_file=rough_cut.name)
+    cam_arg = _opt_path(camera)
+    cam_path = cam_arg or (Path(edl.camera_path) if edl.camera_path else None)
+    camera_file: Optional[str] = None
+    if cam_path is not None:
+        if not cam_path.exists():
+            raise typer.BadParameter(f"Camera video not found: {cam_path}", param_hint="--camera")
+        if edl.camera_path != str(cam_path):
+            edl = edl.model_copy(update={"camera_path": str(cam_path)})
+            edl_json.write_text(edl.model_dump_json(indent=2), encoding="utf-8")
+        rough_camera = work / "rough_camera.mp4"
+        assemble_rough_cut(
+            cam_path,
+            edl,
+            rough_camera,
+            has_audio=False,
+            normalize_audio=False,
+        )
+        camera_file = rough_camera.name
+
+    manifest = remap_timeline(bundle, edl, video_file=rough_cut.name, camera_file=camera_file)
     (work / "timeline_manifest.json").write_text(manifest.model_dump_json(indent=2), encoding="utf-8")
     typer.echo(f"Assembled {rough_cut} ({manifest.durationInFrames} frames) and timeline_manifest.json")
 
@@ -125,12 +187,16 @@ def render(
     manifest_json: Path = typer.Argument(..., exists=True, help="Path to timeline_manifest.json."),
     rough_cut: Optional[Path] = typer.Option(None, "--rough-cut"),
     out_mp4: Optional[Path] = typer.Option(None, "--out", "-o"),
+    camera: Optional[Path] = typer.Option(None, "--camera", help="Optional separate camera video track."),
 ) -> None:
     """Render final MP4 with animated captions and motion graphics via Remotion."""
     work = manifest_json.parent
     rough = rough_cut or work / "rough_cut.mp4"
     dest = out_mp4 or work / "final.mp4"
-    render_with_remotion(rough, manifest_json, dest)
+    cam_arg = _opt_path(camera)
+    default_camera = work / "rough_camera.mp4"
+    camera_cut = cam_arg or (default_camera if default_camera.exists() else None)
+    render_with_remotion(rough, manifest_json, dest, camera_cut_path=camera_cut)
     typer.echo(f"Rendered final video -> {dest}")
 
 
@@ -154,12 +220,16 @@ def run(
     llm_model: str = typer.Option("gpt-4o-mini", "--model"),
     heuristic: bool = typer.Option(False, "--heuristic"),
     instructions: Optional[str] = typer.Option(None, "--instructions"),
+    events: Optional[Path] = typer.Option(None, "--events", help="Optional cursor events.json log."),
+    camera: Optional[Path] = typer.Option(None, "--camera", help="Optional separate camera video track."),
     export_fcpxml_flag: bool = typer.Option(True, "--export-nle/--no-export-nle"),
     skip_render: bool = typer.Option(False, "--skip-render", help="Stop after rough_cut.mp4 + manifest."),
 ) -> None:
     """Run the full end-to-end pipeline: ingest -> transcribe -> plan -> assemble -> render."""
     work = _project_dir(video, out_dir)
     work.mkdir(parents=True, exist_ok=True)
+    events_path = _opt_path(events)
+    camera_path = _opt_path(camera)
 
     ingest(video=video, out_dir=work)
     transcribe(video=video, out_dir=work, model_size=whisper_model)
@@ -169,12 +239,23 @@ def run(
         model=llm_model,
         heuristic=heuristic,
         instructions=instructions,
+        events=events_path,
     )
-    assemble(edl_json=work / "edl.json", transcript_json=work / "transcript.json", out_dir=work)
+    assemble(
+        edl_json=work / "edl.json",
+        transcript_json=work / "transcript.json",
+        out_dir=work,
+        camera=camera_path,
+    )
     if export_fcpxml_flag:
         export_nle(edl_json=work / "edl.json", out_fcpxml=work / "timeline.fcpxml")
     if not skip_render:
-        render(manifest_json=work / "timeline_manifest.json", rough_cut=work / "rough_cut.mp4", out_mp4=work / "final.mp4")
+        render(
+            manifest_json=work / "timeline_manifest.json",
+            rough_cut=work / "rough_cut.mp4",
+            out_mp4=work / "final.mp4",
+            camera=work / "rough_camera.mp4" if camera_path is not None else None,
+        )
 
 
 if __name__ == "__main__":

@@ -115,7 +115,27 @@ def sanitize_edl(edl: EditDecisionList, duration: float) -> EditDecisionList:
     return edl.model_copy(update={"kept_segments": cleaned, "graphic_cues": cues})
 
 
-def build_edl_heuristic(bundle: TranscriptBundle) -> EditDecisionList:
+def _append_cursor_cues(
+    edl: EditDecisionList,
+    duration: float,
+    cursor_log: Any | None,
+) -> EditDecisionList:
+    """Append cursor_highlight cues from a cursor event log and re-sanitize the EDL."""
+    if cursor_log is None:
+        return edl
+    from cursor_events import cues_from_cursor_log
+
+    cursor_cues = cues_from_cursor_log(cursor_log, edl.kept_segments)
+    if not cursor_cues:
+        return edl
+    updated = edl.model_copy(update={"graphic_cues": [*edl.graphic_cues, *cursor_cues]})
+    return sanitize_edl(updated, duration)
+
+
+def build_edl_heuristic(
+    bundle: TranscriptBundle,
+    cursor_log: Any | None = None,
+) -> EditDecisionList:
     """Deterministic fallback planner that removes silences and detected retakes."""
     silence_pad = 0.08
     cuts: list[tuple[float, float]] = []
@@ -185,7 +205,7 @@ def build_edl_heuristic(bundle: TranscriptBundle) -> EditDecisionList:
         captions_enabled=True,
         summary=f"Heuristic cut: {len(kept)} segments, removed {len(bundle.silences)} silences and {len(bundle.retakes)} retakes.",
     )
-    return sanitize_edl(edl, bundle.duration)
+    return _append_cursor_cues(sanitize_edl(edl, bundle.duration), bundle.duration, cursor_log)
 
 
 def _has_llm_credentials(model: str) -> bool:
@@ -201,6 +221,7 @@ def build_edl_with_llm(
     bundle: TranscriptBundle,
     model: str = "gpt-4o-mini",
     instructions: str | None = None,
+    cursor_log: Any | None = None,
 ) -> EditDecisionList:
     """Call an LLM via litellm to produce a structured EditDecisionList."""
     compact_payload: dict[str, Any] = {
@@ -272,7 +293,7 @@ def build_edl_with_llm(
     edl = sanitize_edl(edl, bundle.duration)
     if not edl.kept_segments:
         raise ValueError("Editorial planner returned no valid kept segments")
-    return edl
+    return _append_cursor_cues(edl, bundle.duration, cursor_log)
 
 
 def generate_edl(
@@ -280,8 +301,9 @@ def generate_edl(
     model: str = "gpt-4o-mini",
     heuristic: bool = False,
     instructions: str | None = None,
+    cursor_log: Any | None = None,
 ) -> EditDecisionList:
     """Generate an EDL via LLM if configured, otherwise fall back to heuristic planning."""
     if not heuristic and (model == "opencode" or model.startswith("opencode/") or _has_llm_credentials(model)):
-        return build_edl_with_llm(bundle, model=model, instructions=instructions)
-    return build_edl_heuristic(bundle)
+        return build_edl_with_llm(bundle, model=model, instructions=instructions, cursor_log=cursor_log)
+    return build_edl_heuristic(bundle, cursor_log=cursor_log)

@@ -27,6 +27,7 @@ export interface GraphicCue {
 
 export type TimelineManifest = {
   videoFile: string;
+  cameraFile?: string | null;
   fps: number;
   width: number;
   height: number;

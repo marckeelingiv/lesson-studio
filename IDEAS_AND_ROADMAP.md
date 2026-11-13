@@ -27,7 +27,7 @@
 | --- | --- | --- | --- |
 | **A1** | Implemented | Spoken retake marker & pause-restart detection | Detects `"retake"`, `"scratch that"`, `"take two"`, `"start over"`, `"let me restart"`, `"cut cut"` (both inline and standalone markers that discard the preceding botched segment) plus short aborted starts followed by a `>= 1.0s` reset pause. |
 | **A2** | Implemented | Remotion React cards (`slide_card`, `code_card`, `cursor_highlight`) | Expands `GraphicCue` schema (`schema.py`, `types.ts`) and `Graphics.tsx` so the agent planner can emit presentation slides, monospace code snippets, and normalized `(x, y)` animated cursor/focus rings. |
-| **A3** | Planned | Companion cursor & click event logger | Record OS/window cursor coordinates and click timestamps alongside OBS capture (`events.json`) to auto-generate `cursor_highlight` cues and zoom keyframes. |
-| **A4** | Planned | Separate-track camera + screen compositing | Capture webcam and screen as separate files/tracks (`O1` pattern) so Remotion can zoom full-screen onto dense terminal or IDE content while keeping or hiding the presenter camera independently. |
-| **A5** | Planned | Audio loudness normalization & J/L-cuts | Add FFmpeg `loudnorm` (`-16 LUFS`), gentle compression, and audio overlap across cuts in `assemble.py`. |
+| **A3** | Implemented | Companion cursor & click event logger | Record OS/window cursor coordinates and click timestamps alongside OBS capture (`events.json`) to auto-generate `cursor_highlight` cues and zoom keyframes. |
+| **A4** | Implemented | Separate-track camera + screen compositing | Capture webcam and screen as separate files/tracks (`O1` pattern) so Remotion can zoom full-screen onto dense terminal or IDE content while keeping or hiding the presenter camera independently. |
+| **A5** | Implemented | Audio loudness normalization & J/L-cuts | Add FFmpeg `loudnorm` (`-16 LUFS`), gentle compression, and audio overlap across cuts in `assemble.py`. |
 | **A6** | Planned | Shiki syntax highlighting & code morphing | Render syntax-highlighted and token-morphed code transitions (`O3`) directly inside Remotion `code_card` compositions. |

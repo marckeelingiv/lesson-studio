@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import subprocess
 from pathlib import Path
+from typing import Any
 
 from schema import (
     EditDecisionList,
@@ -18,6 +19,8 @@ def assemble_rough_cut(
     edl: EditDecisionList,
     output_video: Path,
     has_audio: bool = True,
+    normalize_audio: bool = True,
+    audio_fade_sec: float = 0.02,
 ) -> Path:
     """Trim and concatenate kept segments into a single normalized rough-cut MP4."""
     if not edl.kept_segments:
@@ -32,16 +35,31 @@ def assemble_rough_cut(
             f"[0:v]trim=start={seg.start}:end={seg.end},setpts=PTS-STARTPTS[v{idx}]"
         )
         if has_audio:
-            filter_parts.append(
-                f"[0:a]atrim=start={seg.start}:end={seg.end},asetpts=PTS-STARTPTS[a{idx}]"
-            )
+            seg_dur = max(0.05, seg.end - seg.start)
+            fade_d = min(audio_fade_sec, seg_dur / 4.0)
+            if fade_d > 0.002:
+                filter_parts.append(
+                    f"[0:a]atrim=start={seg.start}:end={seg.end},asetpts=PTS-STARTPTS,"
+                    f"afade=t=in:st=0:d={fade_d:.4f},"
+                    f"afade=t=out:st={max(0.0, seg_dur - fade_d):.4f}:d={fade_d:.4f}[a{idx}]"
+                )
+            else:
+                filter_parts.append(
+                    f"[0:a]atrim=start={seg.start}:end={seg.end},asetpts=PTS-STARTPTS[a{idx}]"
+                )
             concat_inputs.append(f"[v{idx}][a{idx}]")
         else:
             concat_inputs.append(f"[v{idx}]")
 
     n = len(edl.kept_segments)
     if has_audio:
-        filter_parts.append(f"{''.join(concat_inputs)}concat=n={n}:v=1:a=1[outv][outa]")
+        if normalize_audio:
+            filter_parts.append(
+                f"{''.join(concat_inputs)}concat=n={n}:v=1:a=1[outv][raw_a];"
+                "[raw_a]loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000[outa]"
+            )
+        else:
+            filter_parts.append(f"{''.join(concat_inputs)}concat=n={n}:v=1:a=1[outv][outa]")
         maps = ["-map", "[outv]", "-map", "[outa]"]
     else:
         filter_parts.append(f"{''.join(concat_inputs)}concat=n={n}:v=1:a=0[outv]")
@@ -76,6 +94,7 @@ def remap_timeline(
     bundle: TranscriptBundle,
     edl: EditDecisionList,
     video_file: str,
+    camera_file: str | None = None,
 ) -> TimelineManifest:
     """Map source word timings onto the concatenated rough-cut timeline."""
     captions: list[RemappedWord] = []
@@ -103,13 +122,17 @@ def remap_timeline(
 
     duration_in_frames = max(1, int(round(timeline_offset * edl.fps)))
 
-    return TimelineManifest(
-        videoFile=video_file,
-        fps=edl.fps,
-        width=edl.width,
-        height=edl.height,
-        durationInFrames=duration_in_frames,
-        captionsEnabled=edl.captions_enabled,
-        captions=captions,
-        graphicCues=edl.graphic_cues,
-    )
+    kwargs: dict[str, Any] = {
+        "videoFile": video_file,
+        "fps": edl.fps,
+        "width": edl.width,
+        "height": edl.height,
+        "durationInFrames": duration_in_frames,
+        "captionsEnabled": edl.captions_enabled,
+        "captions": captions,
+        "graphicCues": edl.graphic_cues,
+    }
+    if "cameraFile" in TimelineManifest.model_fields:
+        kwargs["cameraFile"] = camera_file
+
+    return TimelineManifest(**kwargs)

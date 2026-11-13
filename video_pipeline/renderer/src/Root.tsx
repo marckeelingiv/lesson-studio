@@ -5,6 +5,7 @@ import { TimelineManifest } from "./types";
 
 const defaultProps: TimelineManifest = {
   videoFile: "rough_cut.mp4",
+  cameraFile: null,
   fps: 30,
   width: 1920,
   height: 1080,
