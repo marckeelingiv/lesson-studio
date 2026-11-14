@@ -1,6 +1,7 @@
 # Video pipeline
 
 - Read `README.md` in this directory for setup, stage commands, and artifact formats.
+- Before workflow changes, read `../LESSON_FRAMEWORK_MISSION.md` and `../experiments/post-production-video-editing.md`. This experiment can operate without the presenter interface; implementation status is not evidence of communication benefit.
 - From the repository root, invoke Python with `uv run --project video_pipeline python ...` to use the isolated environment.
 - Prefer `--model opencode` (or `VIDEO_MODEL=opencode` for Make targets) to reuse existing OpenCode provider authentication without an additional API key. Explicit model selection uses `opencode/<provider>/<model>`.
 - After planner changes, run `uv run --project video_pipeline python video_pipeline/src/test_planner.py` from the repository root. These tests mock OpenCode; verify authentication and CLI output compatibility with a real planning run when changing the bridge.

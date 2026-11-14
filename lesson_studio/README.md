@@ -1,7 +1,7 @@
 # Lesson Studio
 
-Read [the overall mission](../LESSON_FRAMEWORK_MISSION.md) for the purpose, scope, lesson series, and future-agent guidance.
-Read [repository and asset ownership](../CONTENT_ASSETS.md) when locating plans, templates, recordings, publication records, or external repositories. The DE-specific roadmap belongs to [DE for Fun](https://github.com/marckeelingiv/de-for-fun) at `docs/content-plan.md` (publication pending), not the reusable framework.
+Read [the overall mission](../LESSON_FRAMEWORK_MISSION.md) for purpose and principles, and the [presenter experiment](../experiments/presenter-assisted-delivery.md) for its hypothesis and evaluation. This guide describes one experimental implementation, not a required presentation format.
+Read [repository and asset ownership](../CONTENT_ASSETS.md) when locating plans, templates, recordings, publication records, or external repositories. The [DE lesson plan](../docs/de-for-fun-content-plan.md) stays here and links to the subject's technical evidence.
 
 A local recording desk: one private presenter console, one clean audience window, and portable JSON lessons. Plain HTML/CSS/JavaScript with a Node standard-library server. No installation, external fonts, hosted services, or data-stack dependencies.
 

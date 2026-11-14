@@ -2,10 +2,13 @@
 
 Local lesson authoring, presenter/audience recording, and video post-production.
 
+These are experiments in communicating engineering judgment, not a required slides-to-video workflow. Use either implementation independently, combine them, or choose a simpler format.
+
 - [Framework mission](LESSON_FRAMEWORK_MISSION.md)
+- Experiment briefs: [presenter-assisted delivery](experiments/presenter-assisted-delivery.md) and [post-production editing](experiments/post-production-video-editing.md).
 - [Recording studio guide](lesson_studio/README.md): start with `node lesson_studio/serve.mjs`.
 - [Repository and asset ownership](CONTENT_ASSETS.md)
-- First subject: [DE for Fun](https://github.com/marckeelingiv/de-for-fun). Subject plans and technical evidence remain there; production scripts live here.
+- [DE for Fun lesson plan](docs/de-for-fun-content-plan.md): the planned series is retained here; platform code and technical evidence remain in DE for Fun.
 
 ## AI Video Post-Production Pipeline
 

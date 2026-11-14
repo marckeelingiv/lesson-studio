@@ -15,7 +15,9 @@ This guide belongs with Lesson Studio. A repository link is a navigation pointer
 | Asset | Authoritative location |
 | --- | --- |
 | Framework purpose and boundaries | Lesson Studio: `LESSON_FRAMEWORK_MISSION.md` |
-| Subject lesson roadmap, technical briefs, demo prerequisites | Subject repo; DE for Fun starts at `docs/content-plan.md` |
+| Experiment hypotheses, trial observations, continuation decisions | Lesson Studio: `experiments/`; link large trial artifacts rather than embedding them |
+| Lesson series and production plans | Lesson Studio; DE for Fun starts at `docs/de-for-fun-content-plan.md`, linking to the subject repo |
+| Technical briefs, demo prerequisites, platform roadmap | Subject repo: https://github.com/marckeelingiv/de-for-fun |
 | Narration, scenes, timings, evidence prompts | Lesson Studio: `lesson_studio/lessons/<lesson-id>.json` |
 | Reusable lesson templates | Lesson Studio: `lesson_studio/templates/` when needed; not yet created |
 | Reusable graphics, styles, rendering templates | Lesson Studio: alongside the studio or renderer code that uses them; commit source and license/attribution |
@@ -46,10 +48,10 @@ Each subject brief should link its script, media folder, source commit, and fina
 
 ## Repository handoff status
 
-Lesson Studio has been extracted into its own repository with both sibling directories and production documentation. The source DE for Fun worktree is preserved. Its `docs/content-plan.md` and updated cross-references still need to be committed/published there. The Drive root remains pending; no Drive folder has been created or verified.
+Lesson Studio has been extracted into its own repository with both sibling directories and production documentation. Duplicate production files have been removed from the DE for Fun `lesson-studio` worktree, with originals backed up outside Git. Its `docs/content-plan.md` is a pointer to the lesson plan here; the cross-references are published on that branch, not necessarily on the default branch. The Drive root remains pending; no Drive folder has been created or verified.
 
 1. Keep `lesson_studio/` and `video_pipeline/` together, preserving their relative layout, guides, dependency locks, and ignore rules. Keep the mission, this guide, roadmap, and applicable agent instructions with them.
-2. Leave DE for Fun's `docs/content-plan.md`, subject briefs, and platform code in DE for Fun. Preserve the existing work until the destination copy is verified.
+2. Keep lesson plans here. Leave technical evidence, platform code, and a production-repository pointer in DE for Fun.
 3. Replace transitional relative links with verified cross-repository URLs in both repos. Replace data-repo framework instructions with a short pointer to Lesson Studio; keep the full production instructions only in Lesson Studio.
 4. Select the Drive root, record its URL here, and add per-lesson media links to subject briefs. Keep generated media and environments out of Git.
 5. Verify the studio runs and the pipeline instructions work independently of DE for Fun before calling extraction complete.

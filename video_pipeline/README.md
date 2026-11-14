@@ -2,6 +2,8 @@
 
 This pipeline automates rough-cut editing, animated captions, and motion graphic overlays from raw talking-head footage.
 
+It is an independent [post-production experiment](../experiments/post-production-video-editing.md) serving the [communication mission](../LESSON_FRAMEWORK_MISSION.md). Recordings do not require the presenter interface or slides. This guide describes operation; the experiment brief owns evaluation and continuation decisions.
+
 ## 1. Recording Guidelines
 
 Follow these habits while filming so the automated cut and graphic steps work reliably:

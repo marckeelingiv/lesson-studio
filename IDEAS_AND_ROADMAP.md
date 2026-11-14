@@ -1,5 +1,7 @@
 # Ideas & Roadmap
 
+This is an implementation backlog, not the mission or proof of communication benefit. Evaluate priorities against the [mission](LESSON_FRAMEWORK_MISSION.md) and the [presenter](experiments/presenter-assisted-delivery.md) or [post-production](experiments/post-production-video-editing.md) experiment. Implemented status does not establish that an approach is worth continuing; architectural decisions here describe the current experiment and can be revisited with evidence.
+
 ## Core Architectural Decision
 
 - **D1 (Post-Production Pipeline over Desktop GUI):** Do not build a custom native Linux desktop app (GTK4, PySide6, or Electron) to replace OBS or replicate Screen Studio live. Use **OBS** (or `gpu-screen-recorder`) for reliable raw capture, **faster-whisper** for word-level transcription, an **AI editorial planner** emitting structured JSON (`edl.json`), and **FFmpeg + Remotion** to render cuts, captions, React slides, code cards, icons/callouts, and animated cursor highlights.

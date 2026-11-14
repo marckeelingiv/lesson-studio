@@ -1,50 +1,54 @@
-# Mission: a reusable build-in-public lesson workflow
+# Mission: make engineering judgment visible
 
-## Why this exists
+## Purpose and audience
 
-Help Marc make his engineering skill and judgment visible through clear, evidence-backed lessons. Lesson Studio owns the reusable creation process, independent of any lesson subject. Project Sandbox in DE for Fun is the first subject.
+Help Marc communicate engineering skill and judgment clearly, using credible evidence, to advance his career. The intended audience includes engineers, hiring managers, and career contacts. Lessons, live demonstrations, presentations, and edited videos are possible formats, not requirements.
 
-This document's canonical home is [Lesson Studio](https://github.com/marckeelingiv/lesson-studio). See [repository and asset ownership](CONTENT_ASSETS.md) for external references and storage locations.
+This document's canonical home is [Lesson Studio](https://github.com/marckeelingiv/lesson-studio). Lesson Studio owns reusable communication and production experiments, independent of any subject. Project Sandbox in DE for Fun is the first subject. See [repository and asset ownership](CONTENT_ASSETS.md) for external references and storage locations.
 
-The intended audience includes engineers, hiring managers, and career contacts. Show the reasoning behind decisions and the working evidence that supports them. Connect business questions to engineering work. Label synthetic data, local deployment, and limitations explicitly; do not imply production adoption or measured customer impact.
+## Desired outcomes
 
-## Requested experience
+- Clearer explanations that connect engineering decisions to business questions.
+- Visible judgment: evidence, reasoning, tradeoffs, and limitations rather than tool demonstrations alone.
+- Work suitable for sharing with career contacts or publishing when useful.
+- A sustainable process whose preparation, delivery, and editing effort are worth the communication benefit.
 
-- A private presenter view with the lesson rundown, narration notes, evidence prompts, timing, and source controls.
-- A separate audience view suitable for recording, with Marc's face in the bottom-right and no private notes or controls.
-- Present slides, code, VS Code/native apps, websites, and localhost services. Use browser window/tab capture for native apps and sites that refuse embedding. The presenter operates captured apps in their original windows.
-- Reusable lesson definitions independent of the application. The first lesson is the 90–120-second “From event to answer” walkthrough.
-- A repeatable recording and editing handoff to `video_pipeline/README.md`, preserving source footage and making editorial review practical.
-- Keep the studio and video pipeline self-contained so they can move together into a separate repository later.
+## Principles
 
-## End-to-end process
+- Support claims with verified evidence. Label synthetic data and local deployment; distinguish demonstrations from production adoption or measured customer impact.
+- Choose a format that serves the communication goal. Slides, a presenter interface, camera overlays, AI editing, and publication are optional.
+- Preserve source material and human editorial control. Review the actual audience experience before sharing; rendering success does not establish visual or narrative quality.
+- Keep reusable tools independent of subject applications and their infrastructure. Store source and assets according to the asset guide.
 
-1. Pick a business question and verify the actual result and supporting metric/model.
-2. Plan the lesson around **problem → decision → evidence → tradeoff**. Identify the visible evidence for every claim.
-3. Rehearse the scenes and sources. Keep important content clear of the camera and bottom caption band.
-4. Record only the audience stage with camera and microphone. Leave one-second pauses between sections. Restart full sentences on mistakes. Preserve raw video and take notes.
-5. Process the source recording through the existing video pipeline. Prefer its documented OpenCode integration when model-assisted planning is desired.
-6. Review cuts, captions, screen readability, face framing, and graphics against the actual video. The transcript-only planner cannot verify screen continuity.
-7. Revise the edit, publish deliberately, and retain the lesson, source, take notes, output, post text, and URL as evidence for future lessons.
+## Experimental approach
 
-## Subject plans
+Current implementations are replaceable experiments, not permanent mission requirements. They may be used independently or together. Existing code and roadmap entries do not by themselves justify further investment.
 
-Subject repositories own their content roadmap and technical evidence. The initial series belongs in DE for Fun at `docs/content-plan.md`; its publication is pending from the source worktree. Use the repository reference in [CONTENT_ASSETS.md](CONTENT_ASSETS.md). Lesson Studio owns executable lesson scripts and reusable templates, not the subject's technical roadmap.
+1. Choose a communication goal and audience.
+2. Prepare and verify the supporting evidence; problem → decision → evidence → tradeoff is a useful starting structure, not a required format.
+3. Try an approach appropriate to that goal. Record the effort and friction as well as the output.
+4. Review clarity, credibility, and the actual viewing or presentation experience.
+5. Publish or share when appropriate; an internal trial is also a valid outcome.
+6. Record what was observed and decide whether to retain, revise, pause, or retire the approach.
 
-## Current implementation and boundaries
+## Current experiments
 
-`lesson_studio/` contains a buildless HTML/CSS/JavaScript studio, a loopback-only Node standard-library server, portable lesson JSON, browser capture/recording, and recording notes. `lesson_studio/README.md` is the operational guide. `video_pipeline/` remains the editing/rendering workflow. No new hosted service, user account, data-stack dependency, or browser-to-shell API is required.
+| Experiment | Hypothesis and current manifestation |
+| --- | --- |
+| [Presenter-assisted delivery](experiments/presenter-assisted-delivery.md) | Private prompts and a clean audience view may improve delivery. Currently a JavaScript presenter/audience interface. |
+| [Post-production video editing](experiments/post-production-video-editing.md) | Transcript-assisted editing may reduce editing effort without harming meaning or visual continuity. Currently the video pipeline. |
 
-The studio cannot bypass screen-capture permission pickers or website iframe restrictions. It does not remotely control VS Code. The presenter console must stay open to own source streams. Browser recording is intended for short lessons; OBS is an alternative for longer/durable recordings. Take notes are not the pipeline's edit-decision-list format and are not automatically ingested. Actual camera, microphone, capture permissions, and output quality require a recording rehearsal.
+Implementation exists for both; evaluated communication benefit is not established by that fact. Each brief owns its evaluation questions, observations, and continuation decision. Operational details stay in the implementation guides.
 
-Future work should close observed gaps in this workflow. Automatic scene-aware editing, richer authoring, direct pipeline ingestion of markers, and publication automation are not promised by the current implementation.
+## Ownership and documentation
 
-## Worktree provenance and portability
-
-At Marc's request, work began in a Herdr worktree named `lesson-studio`, based on `ai-video-pipeline`. The source worktree had modified `.gitignore`, `AGENTS.md`, and `Makefile`, plus an untracked `video_pipeline/` tree. All 29 modified/untracked source files were copied and byte-verified before studio work. Ignored environments, dependencies, and generated media were excluded; the original worktree was left untouched.
-
-Keep `lesson_studio/` and `video_pipeline/` as sibling directories using relative references. Avoid hardcoded developer/worktree paths and imports from Project Sandbox's data application. Preserve dependency locks and pipeline instructions; do not commit recordings, secrets, environments, or generated rendering workspaces. The future repository should carry this mission document, the studio guide, pipeline guide, and applicable agent instructions.
+- **Mission (this file):** enduring purpose, outcomes, and principles. Change it when the objective changes, not whenever a tool changes.
+- **Experiment briefs:** hypotheses, alternatives, trial evidence, and retain/revise/retire decisions.
+- **READMEs:** how current implementations work, including limitations and verification instructions.
+- **[Roadmap](IDEAS_AND_ROADMAP.md):** implementation ideas and status, not commitments or evidence of benefit.
+- **[Asset guide](CONTENT_ASSETS.md):** repositories, storage, and handoff conventions.
+- **Lesson plans:** keep the [DE for Fun series](docs/de-for-fun-content-plan.md) here alongside production scripts and links to its subject. Subject repositories own platform roadmaps and technical evidence, not duplicate lesson plans.
 
 ## Working agreement for future agents
 
-Read this document, `lesson_studio/README.md`, and `video_pipeline/AGENTS.md` before changing the lesson workflow. Preserve the separation between audience content and presenter-only material. Distinguish implemented behavior, tested behavior, and planned work. Update this mission when Marc changes the objective; update operational instructions when behavior changes. Never claim that a rendered video was visually reviewed unless it actually was.
+Before changing an experiment, read this mission, its brief, and the relevant implementation guide and agent instructions. Preserve the purpose, not necessarily the current solution. Keep implementation status, tested behavior, and evaluated benefit distinct. Update the owning document and its pointers rather than copying rules between documents. Record an experiment decision when changing direction; leave unobserved results explicitly unrecorded. Never claim visual review without inspecting the actual output.
