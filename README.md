@@ -1,4 +1,13 @@
-# AI Video Post-Production Pipeline
+# Lesson Studio
+
+Local lesson authoring, presenter/audience recording, and video post-production.
+
+- [Framework mission](LESSON_FRAMEWORK_MISSION.md)
+- [Recording studio guide](lesson_studio/README.md): start with `node lesson_studio/serve.mjs`.
+- [Repository and asset ownership](CONTENT_ASSETS.md)
+- First subject: [DE for Fun](https://github.com/marckeelingiv/de-for-fun). Subject plans and technical evidence remain there; production scripts live here.
+
+## AI Video Post-Production Pipeline
 
 Local-first, transcript-driven post-production pipeline for technical walkthroughs and talking-head recordings:
 

@@ -4,6 +4,8 @@ Compact guidance for AI agents working in this repository.
 
 ## References
 
+- For lesson workflow changes, read `LESSON_FRAMEWORK_MISSION.md` and `lesson_studio/README.md` first. For content ownership or asset placement, read `CONTENT_ASSETS.md`. Subject plans and technical evidence belong in the subject repository.
+
 - [video_pipeline/AGENTS.md](video_pipeline/AGENTS.md) — Planner auth, `av<19` constraint, and review rules.
 - [video_pipeline/README.md](video_pipeline/README.md) — Setup, CLI stages, and output artifacts.
 - [IDEAS_AND_ROADMAP.md](IDEAS_AND_ROADMAP.md) — Architecture (`D1`) and feature status (`A1`–`A6`).
