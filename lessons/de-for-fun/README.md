@@ -1,6 +1,6 @@
 # DE for Fun content plan
 
-Canonical lesson plan: this file in Lesson Studio. Subject implementation and technical evidence live in [marckeelingiv/de-for-fun](https://github.com/marckeelingiv/de-for-fun). Keep lesson plans here and link back to the subject rather than copying its technical documentation.
+Canonical series plan: this file in Lesson Studio. Subject implementation and technical evidence live in [marckeelingiv/de-for-fun](https://github.com/marckeelingiv/de-for-fun). Keep lesson plans here and link back to the subject rather than copying its technical documentation.
 
 ## Purpose
 
@@ -10,7 +10,7 @@ Make engineering judgment visible to engineers, hiring managers, and career cont
 
 | Lesson | What viewers should assess |
 | --- | --- |
-| From event to answer | End-to-end delivery and clear communication |
+| [From event to answer](event-to-answer/brief.md) — scripted; evidence verification pending | End-to-end delivery and clear communication |
 | Why DuckDB; when to choose something else | Technical judgment and cost awareness |
 | Malformed or duplicate data | Reliability and correctness, using observed behavior |
 | Defined metrics through MCP | Practical AI integration and its boundaries |
@@ -21,15 +21,15 @@ These are demonstrations to prepare, not claims that every capability exists. Pr
 
 ## Production handoff
 
-Use the separate [Lesson Studio repository](https://github.com/marckeelingiv/lesson-studio) for reusable presentation and post-production experiments. Its mission is `LESSON_FRAMEWORK_MISSION.md`, experiment briefs are in `experiments/`, and repository/storage ownership is in `CONTENT_ASSETS.md`. Read that repository's instructions before changing production tools. Presentation and post-production are independent options, not a required sequence.
+Use this repository's reusable presentation and post-production experiments only when useful. Read the [mission](../../LESSON_FRAMEWORK_MISSION.md), relevant [experiment brief](../../experiments/), and [asset ownership](../../CONTENT_ASSETS.md) before changing production tools. Presentation and post-production are independent options, not a required sequence.
 
-The first script is [event-to-answer.json in Lesson Studio](https://github.com/marckeelingiv/lesson-studio/blob/main/lesson_studio/lessons/event-to-answer.json): six scenes, 115 seconds, with narration and evidence prompts. The other five topics are outlines, not completed scripts. Studio and pipeline source are maintained only in that repository.
+The first script is [presenter.json](event-to-answer/presenter.json): six scenes, 115 seconds, with narration and evidence prompts. Start with its [preparation brief](event-to-answer/brief.md). The other five topics are outlines, not completed scripts.
 
 Before recording each lesson:
 
 1. Choose one business question and verify its actual result.
-2. Record the DE for Fun commit, demo commands/prerequisites, model/metric paths, and known limitations in a lesson-specific brief here under `docs/`.
+2. Record the DE for Fun commit, links to technical prerequisites and demo commands, model/metric paths, and known limitations in the lesson's `brief.md`.
 3. Link the matching Lesson Studio script and media folder from that brief. Use the same lesson ID across repositories and media, starting with `event-to-answer`.
 4. Rehearse problem → decision → evidence → tradeoff. Use observed behavior, not invented numbers or unverified reliability claims.
 
-Track subject-specific briefs and publication outcomes here. Put reusable production instructions in Lesson Studio rather than copying them into this repo.
+Track preparation in each lesson's `brief.md` and platform copy and publication outcomes in its `publishing.md`. Link reusable production instructions rather than copying them.

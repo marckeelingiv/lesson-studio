@@ -1,7 +1,7 @@
 # Lesson Studio
 
 Read [the overall mission](../LESSON_FRAMEWORK_MISSION.md) for purpose and principles, and the [presenter experiment](../experiments/presenter-assisted-delivery.md) for its hypothesis and evaluation. This guide describes one experimental implementation, not a required presentation format.
-Read [repository and asset ownership](../CONTENT_ASSETS.md) when locating plans, templates, recordings, publication records, or external repositories. The [DE lesson plan](../docs/de-for-fun-content-plan.md) stays here and links to the subject's technical evidence.
+Read [repository and asset ownership](../CONTENT_ASSETS.md) when locating plans, templates, recordings, publication records, or external repositories. The [lesson library](../lessons/README.md) owns content independently of this tool; the [DE series](../lessons/de-for-fun/README.md) links to the subject's technical evidence.
 
 A local recording desk: one private presenter console, one clean audience window, and portable JSON lessons. Plain HTML/CSS/JavaScript with a Node standard-library server. No installation, external fonts, hosted services, or data-stack dependencies.
 
@@ -29,9 +29,9 @@ The console must remain open to own the camera, source streams, and recordings. 
 
 ### Prepare and rehearse
 
-The starter `lessons/event-to-answer.json` contains the six scenes of the 115-second Project Sandbox walkthrough, including narration and evidence prompts. It intentionally includes no invented results: capture the real event, metric definition, and MCP answer. Rehearse these before recording. The live data platform is separate; this studio neither starts its services nor runs shell commands.
+Start with the [first lesson's brief](../lessons/de-for-fun/event-to-answer/brief.md). Its `presenter.json` contains the six scenes of the 115-second Project Sandbox walkthrough, including narration and evidence prompts. It intentionally includes no invented results: capture the real event, metric definition, and MCP answer. Rehearse these before recording. The live data platform is separate; this studio neither starts its services nor runs shell commands. The server exposes the sibling library's JSON under `/lessons/`; it does not expose the repository root.
 
-Use **Lesson editor & files** to edit and apply JSON or import a lesson. Export JSON into `lesson_studio/lessons/` to version it. Changes persist only in this browser origin's local storage until exported; changing ports changes browser storage. **Load starter lesson** replaces local edits; export first if needed. Replacing a lesson while recording is blocked.
+Use **Lesson editor & files** to edit and apply JSON or import a lesson. Save exported JSON as `lessons/<subject>/<lesson-id>/presenter.json` to version it. Changes persist only in this browser origin's local storage until exported; changing ports changes browser storage. **Load starter lesson** replaces local edits; export first if needed. Replacing a lesson while recording is blocked.
 
 Supported scene types:
 
@@ -81,7 +81,7 @@ Preserve and link each lesson's script, source recording, take notes, pipeline w
 
 ## Move to a separate repository
 
-Copy `lesson_studio/` and `video_pipeline/` together as sibling directories. The studio uses only relative asset paths and resolves its server root from its own file location. It has no imports from the data project and no baked-in worktree path. Lessons, media, and pipeline are independent. Use the direct pipeline command above or include `video_pipeline/Makefile.mk` in the new root Makefile. Carry over the pipeline's ignore rules for `.venv`, `node_modules`, workspace output, and media. Never move a dependency environment as source.
+Copy `lesson_studio/`, `lessons/`, and `video_pipeline/` together as sibling directories. The studio resolves its assets and the lesson library from its own file location. It has no imports from the data project and no baked-in worktree path. Lessons, media, and pipeline are independent. Use the direct pipeline command above or include `video_pipeline/Makefile.mk` in the new root Makefile. Carry over the pipeline's ignore rules for `.venv`, `node_modules`, workspace output, and media. Never move a dependency environment as source.
 
 ## Verification limits
 

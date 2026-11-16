@@ -47,7 +47,7 @@ Implementation exists for both; evaluated communication benefit is not establish
 - **READMEs:** how current implementations work, including limitations and verification instructions.
 - **[Roadmap](IDEAS_AND_ROADMAP.md):** implementation ideas and status, not commitments or evidence of benefit.
 - **[Asset guide](CONTENT_ASSETS.md):** repositories, storage, and handoff conventions.
-- **Lesson plans:** keep the [DE for Fun series](docs/de-for-fun-content-plan.md) here alongside production scripts and links to its subject. Subject repositories own platform roadmaps and technical evidence, not duplicate lesson plans.
+- **Lesson plans:** keep the [lesson library](lessons/README.md), including the [DE for Fun series](lessons/de-for-fun/README.md), independent of production tools. Each lesson owns its preparation brief, optional delivery script, and publication record. Subject repositories own platform roadmaps and technical evidence, not duplicate lesson plans.
 
 ## Working agreement for future agents
 

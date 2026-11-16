@@ -4,7 +4,7 @@
 
 | Home | Owns | Reference |
 | --- | --- | --- |
-| DE for Fun | Data platform, technical documentation, subject roadmap, demo evidence and publication log | https://github.com/marckeelingiv/de-for-fun |
+| DE for Fun | Data platform, technical documentation, subject roadmap and demo evidence | https://github.com/marckeelingiv/de-for-fun |
 | Lesson Studio | Framework mission, production workflow, portable lesson JSON, reusable templates, recording UI and post-production code | https://github.com/marckeelingiv/lesson-studio |
 | Google Drive | Media archive and shared editorial feedback | Folder URL pending; no Drive folder has been created or verified |
 
@@ -16,16 +16,16 @@ This guide belongs with Lesson Studio. A repository link is a navigation pointer
 | --- | --- |
 | Framework purpose and boundaries | Lesson Studio: `LESSON_FRAMEWORK_MISSION.md` |
 | Experiment hypotheses, trial observations, continuation decisions | Lesson Studio: `experiments/`; link large trial artifacts rather than embedding them |
-| Lesson series and production plans | Lesson Studio; DE for Fun starts at `docs/de-for-fun-content-plan.md`, linking to the subject repo |
+| Lesson series and production plans | Lesson Studio: `lessons/<subject>/README.md` and `<lesson-id>/brief.md`; DE for Fun starts at `lessons/de-for-fun/README.md` |
 | Technical briefs, demo prerequisites, platform roadmap | Subject repo: https://github.com/marckeelingiv/de-for-fun |
-| Narration, scenes, timings, evidence prompts | Lesson Studio: `lesson_studio/lessons/<lesson-id>.json` |
-| Reusable lesson templates | Lesson Studio: `lesson_studio/templates/` when needed; not yet created |
+| Narration, scenes, timings, evidence prompts | Lesson Studio: `lessons/<subject>/<lesson-id>/presenter.json` when using the presenter |
+| Reusable lesson templates | Lesson Studio: `lessons/templates/` |
 | Reusable graphics, styles, rendering templates | Lesson Studio: alongside the studio or renderer code that uses them; commit source and license/attribution |
 | Subject-specific diagrams, screenshots, code examples | Subject repo for small, safe source/evidence files; large or sensitive captures in the media archive |
 | Raw video/audio, camera tracks, capture logs and take notes | Drive media archive; local working copy outside Git |
 | Transcripts, EDLs, pipeline workspace, intermediate renders | Local pipeline workspace outside tracked source; archive the selected take's workspace in Drive |
 | Reviewed final video, thumbnails, caption exports | Drive media archive |
-| Post text, publication date/URL, source commit, script commit, media links | Subject repo's lesson brief/publication log; Drive may hold a linked review draft |
+| Post text, publication date/URL, source commit, script commit, media links | Lesson Studio: `lessons/<subject>/<lesson-id>/publishing.md`; Drive may hold a linked review draft |
 | Credentials, tokens, private customer information | Neither public repo nor shared media folder; use private credential storage and sanitized evidence |
 
 Git owns small, reviewable source; Drive owns bulky production artifacts. A Google Doc can collect feedback, but accepted script changes return to versioned lesson JSON. Link instead of maintaining competing canonical copies.
@@ -54,7 +54,7 @@ The original pipeline had source differences from this repository. They were pre
 
 Standalone verification passed: 11 pipeline tests, 3 planner tests, and the renderer TypeScript check. These checks do not establish camera/capture behavior or visual quality. The Drive root remains pending; no Drive folder has been created or verified.
 
-1. Keep `lesson_studio/` and `video_pipeline/` together, preserving their relative layout, guides, dependency locks, and ignore rules. Keep the mission, this guide, roadmap, and applicable agent instructions with them.
+1. Keep `lesson_studio/`, `lessons/`, and `video_pipeline/` together, preserving their relative layout, guides, dependency locks, and ignore rules. Keep the mission, this guide, roadmap, and applicable agent instructions with them.
 2. Keep lesson plans here and link technical evidence to DE for Fun. Keep that data repository free of Lesson Studio content and production instructions.
 3. Maintain cross-repository references here using verified repository URLs. Keep implementation guidance with its owning experiment.
 4. Select the Drive root, record its URL here, and add per-lesson media links to subject briefs. Keep generated media and environments out of Git.

@@ -8,7 +8,7 @@ These are experiments in communicating engineering judgment, not a required slid
 - Experiment briefs: [presenter-assisted delivery](experiments/presenter-assisted-delivery.md) and [post-production editing](experiments/post-production-video-editing.md).
 - [Recording studio guide](lesson_studio/README.md): start with `node lesson_studio/serve.mjs`.
 - [Repository and asset ownership](CONTENT_ASSETS.md)
-- [DE for Fun lesson plan](docs/de-for-fun-content-plan.md): the planned series is retained here; platform code and technical evidence remain in DE for Fun.
+- [Lesson library](lessons/README.md): start with the [DE for Fun series](lessons/de-for-fun/README.md) and its first recording brief; platform code and technical evidence remain in DE for Fun.
 
 ## AI Video Post-Production Pipeline
 

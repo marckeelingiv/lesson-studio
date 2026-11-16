@@ -122,7 +122,7 @@ $('import').onchange = async event => {
 };
 $('export').onclick = () => download(lesson, 'lesson.json');
 async function starter() {
-  const response = await fetch('./lessons/event-to-answer.json');
+  const response = await fetch('./lessons/de-for-fun/event-to-answer/presenter.json');
   if (!response.ok) throw Error(`Starter lesson failed to load (${response.status}).`);
   apply(await response.json());
 }
