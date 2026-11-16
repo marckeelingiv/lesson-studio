@@ -48,10 +48,14 @@ Each subject brief should link its script, media folder, source commit, and fina
 
 ## Repository handoff status
 
-Lesson Studio has been extracted into its own repository with both sibling directories and production documentation. Duplicate production files have been removed from the DE for Fun `lesson-studio` worktree, with originals backed up outside Git. Its `docs/content-plan.md` is a pointer to the lesson plan here; the cross-references are published on that branch, not necessarily on the default branch. The Drive root remains pending; no Drive folder has been created or verified.
+Lesson Studio owns both experimental implementations and all lesson plans. DE for Fun's `master` contains only the data project and its existing subject-specific slides/review tools; no production-repository pointer or lesson plan was merged there. The old DE `lesson-studio` and `ai-video-pipeline` worktrees and local branches were retired on 2026-11-15, and the remote DE `lesson-studio` branch was deleted.
+
+The original pipeline had source differences from this repository. They were preserved, not merged: a verified Git bundle of both retired branches and a source/media archive are retained outside the repositories at `/home/marc/dev/cleanup-backups/de-for-fun-2026-11-15/`. Dependency environments were excluded from the file archive. Earlier extraction backups under `/tmp/opencode/` remain untouched. Retain these backups until their unique work has been reviewed; do not mistake the old pipeline snapshot for the canonical implementation.
+
+Standalone verification passed: 11 pipeline tests, 3 planner tests, and the renderer TypeScript check. These checks do not establish camera/capture behavior or visual quality. The Drive root remains pending; no Drive folder has been created or verified.
 
 1. Keep `lesson_studio/` and `video_pipeline/` together, preserving their relative layout, guides, dependency locks, and ignore rules. Keep the mission, this guide, roadmap, and applicable agent instructions with them.
-2. Keep lesson plans here. Leave technical evidence, platform code, and a production-repository pointer in DE for Fun.
-3. Replace transitional relative links with verified cross-repository URLs in both repos. Replace data-repo framework instructions with a short pointer to Lesson Studio; keep the full production instructions only in Lesson Studio.
+2. Keep lesson plans here and link technical evidence to DE for Fun. Keep that data repository free of Lesson Studio content and production instructions.
+3. Maintain cross-repository references here using verified repository URLs. Keep implementation guidance with its owning experiment.
 4. Select the Drive root, record its URL here, and add per-lesson media links to subject briefs. Keep generated media and environments out of Git.
 5. Verify the studio runs and the pipeline instructions work independently of DE for Fun before calling extraction complete.
