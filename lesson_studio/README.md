@@ -92,16 +92,20 @@ Automated checks can validate lesson JSON and serving behavior. Camera hardware,
 Launch the same static server with `node lesson_studio/serve.mjs`. Open
 **http://127.0.0.1:4173/dashboard.html** (also linked as **Evidence desk** from the
 studio). No install/build step or subject checkout is required. The default
-landing is a persistent pan/zoom canvas: five story placeholders (**Question →
+landing is a persistent pan/zoom canvas: five portable story slides (**Question →
 Evidence → Definition → Answer → Trust / limits**) above actual lineage,
 table, SQL, governance, provenance and external-tool cards. There are no page
 tabs. Drag empty background or scroll it to pan; Ctrl/⌘-scroll zooms around the
 pointer. **Focus** fits a card, **Home / fit board** fits everything, and
 **Previous / Next** follows the ordered story/evidence route. With the viewport
 focused, arrows pan and Home / + / − control the camera. Table and SQL scrolling
-never pans the board. The optional portable
+never pans the board. The desk loads the existing portable
 [purchase-evidence script](../lessons/de-for-fun/purchase-evidence/presenter.json)
-can be imported into the original presenter; its starter lesson is unchanged.
+at startup; only `kicker`, `title`, `body`, `points` and `disclosure` survive
+the public projection. Notes, evidence prompts and scene timing never enter the
+board or audience messages. Missing lesson content is labeled unavailable.
+The script can also be imported into the original presenter; its starter lesson
+is unchanged.
 
 ### Private desk and clean capture
 
@@ -109,13 +113,17 @@ can be imported into the original presenter; its starter lesson is unchanged.
    is `/dashboard-audience.html`, opened from the desk—not an independently
    configured iframe. Keep the desk open.
 2. Either window can change branch, selected node, SQL tab and
-   pinned column. Node selection opens its bounded table; a wire opens the
-   downstream model's SQL in Definition. Hover/focus column headers for
+    pinned column. A node selects its model and focuses the bounded table card;
+    a wire selects its downstream model and focuses the SQL card in one action.
+    Hover/focus column headers for
    documented metadata; click to pin/release the card. When observation fails,
    documented column buttons remain inspectable without pretending to know
    the saved schema. Temporary hover is local; pinning is synchronized.
-   Canvas framing is currently local to each window; camera synchronization and
-   portable slide loading are not implemented in this foundation.
+    Camera gestures synchronize in both directions using camera-only messages,
+    coalesced to at most one per animation frame, including the trailing position.
+    They do not fetch evidence or send table payloads. Focus and Previous/Next
+    use validated board card IDs; the private desk owns authoritative state.
+    Reloading the audience receives the current camera and sanitized evidence.
 3. **Capture the evidence audience window**, not the private desk. Use OBS window
    capture, or select the evidence audience tab through the original presenter's
    **Choose screen / window / tab** and record the original studio audience as
@@ -212,8 +220,10 @@ results**. No metric answer is computed or fabricated by this frontend.
 node --test lesson_studio/serve.test.mjs lesson_studio/dashboard.test.mjs lesson_studio/dashboard-camera.test.mjs
 ```
 
-These cover static routes, branch/action rules, URL boundaries, metadata joins,
-text-only rendering, audience serialization, offline clearing, and sequential
+These cover static routes, branch/action/camera rules, portable-field sanitation,
+URL boundaries, metadata joins, text-only rendering, audience serialization,
+camera-only message ordering and origin/source checks, retained table/header
+identity and scroll/focus, offline clearing, and sequential
 observation coordination with fake responses. No subject services or browser
 targets are started. Actual layout, clean-window interaction/capture, popup
 behavior, keyboard usability in a browser and external app readiness remain
@@ -227,6 +237,26 @@ separate verification work. No visual quality is established by these checks.
   resize preserves `{cx, cy, zoom}`. This module never observes evidence.
 - `dashboard-view.mjs`: `mountDashboard(root, dispatch)` returns `update(state)`.
   Mount once per window. The viewport, world, cards and content slots persist;
-  `update.camera`, `update.focus(id)` and `update.destroy()` expose framing and
-  cleanup. Evidence renderers still replace slot interiors on content changes:
-  preserving inner scroll/focus through evidence refresh is follow-up work.
+  `update.camera`, `update.setCamera(camera, activeCard?)`, `update.focus(id)` and
+  `update.destroy()` expose framing and cleanup. Applying authoritative camera
+  state does not dispatch it again. Evidence refresh never auto-fits the camera.
+- `dashboard-evidence.mjs`: `mountEvidence(slots, dispatch)` returns
+  `update(state)`, owning lineage/table/SQL/governance/provenance/tools content,
+  with no camera or network knowledge. Native reconciliation retains table
+  wrappers and header controls when schema/selection are unchanged; rows,
+  counts, status and handlers update in place. SQL/governance scroll is retained
+  for the same model selection; changing models can replace detail content.
+- `dashboard-core.mjs`: `publicLesson`, `cameraState`, `validAction`,
+  `applyAction` and `audienceState` centralize sanitizing and validated actions.
+  Camera centers are finite and bounded to ±100,000 logical units; zoom is
+  0.08–4. Only known card/route IDs and actual manifest model IDs are accepted.
+- `dashboard-sync.mjs`: `cameraChannel({peer, origin, apply, frame?})` returns
+  `publish`, `receive`, `clear`. Exact-window/same-origin camera delivery is
+  latest-value per animation frame. Full authoritative views supersede pending
+  gestures; audience gestures are accepted without an echo. Background windows
+  may have animation-frame delivery throttled by the browser.
+
+No browser/visual acceptance is established by the integration checks. Review
+real framing, readability, clean-window gestures, keyboard use, scrolling and
+capture separately. Subject data realism/exposure investigation is separate work;
+this integration does not change the subject application or its evidence.

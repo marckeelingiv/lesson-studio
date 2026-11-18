@@ -2,11 +2,14 @@
 // CSS pixels. A resize changes the letterbox/scale, never the logical camera.
 export const viewport = {width:1600, height:900};
 export const minZoom = 0.08, maxZoom = 4;
+export const maxPosition = 100000;
 export function validCamera(camera) {
   return Boolean(camera && Number.isFinite(camera.cx) && Number.isFinite(camera.cy) &&
+    Math.abs(camera.cx) <= maxPosition && Math.abs(camera.cy) <= maxPosition &&
     Number.isFinite(camera.zoom) && camera.zoom >= minZoom && camera.zoom <= maxZoom);
 }
 const clamp = zoom => Math.max(minZoom, Math.min(maxZoom, zoom));
+const position = value => Math.max(-maxPosition, Math.min(maxPosition, value));
 export function fit(rect, padding = 60) {
   if (![rect?.x, rect?.y, rect?.width, rect?.height, padding].every(Number.isFinite) ||
       rect.width <= 0 || rect.height <= 0 || padding < 0 || padding >= viewport.height / 2) throw Error('Invalid camera fit rectangle');
@@ -15,14 +18,14 @@ export function fit(rect, padding = 60) {
 }
 export function pan(camera, dx, dy) {
   if (!validCamera(camera) || ![dx, dy].every(Number.isFinite)) throw Error('Invalid camera pan');
-  return {...camera, cx:camera.cx - dx / camera.zoom, cy:camera.cy - dy / camera.zoom};
+  return {zoom:camera.zoom, cx:position(camera.cx - dx / camera.zoom), cy:position(camera.cy - dy / camera.zoom)};
 }
 export function zoomAt(camera, factor, point = {x:800, y:450}) {
   if (!validCamera(camera) || !Number.isFinite(factor) || factor <= 0 ||
       ![point?.x, point?.y].every(Number.isFinite)) throw Error('Invalid camera zoom');
   const zoom = clamp(camera.zoom * factor);
-  return {zoom, cx:camera.cx + (point.x - 800) * (1 / camera.zoom - 1 / zoom),
-    cy:camera.cy + (point.y - 450) * (1 / camera.zoom - 1 / zoom)};
+  return {zoom, cx:position(camera.cx + (point.x - 800) * (1 / camera.zoom - 1 / zoom)),
+    cy:position(camera.cy + (point.y - 450) * (1 / camera.zoom - 1 / zoom))};
 }
 
 // Mounted once. This module owns input and transforms only: no evidence state,
@@ -41,7 +44,7 @@ export function mountCamera(surface, world, initial, onChange = () => {}) {
   }
   function set(next) {
     if (!validCamera(next)) throw Error('Invalid camera');
-    camera = {...next}; paint(); onChange({...camera});
+    camera = {cx:next.cx, cy:next.cy, zoom:next.zoom}; paint(); onChange({...camera});
   }
   const handlers = {
     pointerdown(event) {

@@ -25,7 +25,7 @@ test('serves the moved starter without exposing files outside static roots', asy
     assert.equal(lesson.scenes.reduce((sum, scene) => sum + scene.seconds, 0), 115);
     for (const path of ['/dashboard.html', '/dashboard-audience.html', '/dashboard.css',
       '/dashboard.mjs', '/dashboard-audience.mjs', '/dashboard-view.mjs', '/dashboard-core.mjs',
-      '/dashboard-board.mjs', '/dashboard-camera.mjs']) {
+      '/dashboard-board.mjs', '/dashboard-camera.mjs', '/dashboard-evidence.mjs', '/dashboard-sync.mjs']) {
       const result = await fetch(`${base}${path}`);
       assert.equal(result.status, 200, path);
       if (path.endsWith('.mjs')) assert.match(result.headers.get('content-type'), /text\/javascript/);

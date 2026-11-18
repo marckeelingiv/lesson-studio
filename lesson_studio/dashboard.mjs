@@ -1,37 +1,47 @@
-import {steps, companionURL, branchGraph, purchaseBranch, audienceState, validAction, errorMessage} from './dashboard-core.mjs';
+import {steps, companionURL, branchGraph, purchaseBranch, audienceState, applyAction, publicLesson, errorMessage} from './dashboard-core.mjs';
 import {mountDashboard} from './dashboard-view.mjs';
+import {cards} from './dashboard-board.mjs';
+import {fit} from './dashboard-camera.mjs';
+import {cameraChannel} from './dashboard-sync.mjs';
 
 const $ = selector => document.querySelector(selector);
 export const state = {
   page: steps[0], selected: null, branch: 'all', sqlTab: 'source', pinnedColumn: null,
+  camera:fit(cards[0]), activeCard:'question', lesson:publicLesson(null),
   graph: {nodes:[], edges:[]}, model: null, observations: {}, provenance: null,
   services: {}, status:'Companion not observed yet. No results substituted.', observedAt:null, busy:false,
 };
 let base = 'http://127.0.0.1:4174', audience = null, pending = false, timer;
 const starts = {};
 const updateDashboard = mountDashboard($('#dashboard'), action);
+const cameraSync = cameraChannel({
+  peer:() => audience, origin:location.origin,
+  apply:camera => action({type:'camera', value:camera}, true),
+});
 
 function paint() {
+  cameraSync.clear(); // A full authoritative view supersedes a queued gesture.
   updateDashboard(audienceState(state));
   if (audience && !audience.closed) audience.postMessage({type:'evidence-view-v1', state:audienceState(state)}, location.origin);
 }
-function action(message) {
-  if (!validAction(message, state)) return;
-  const {type, value} = message;
-  if (type === 'page') state.page = value;
-  if (type === 'sqlTab') state.sqlTab = value;
-  if (type === 'column') state.pinnedColumn = value;
-  if (type === 'select') { state.selected = value; state.pinnedColumn = null; }
-  if (type === 'branch') {
-    state.branch = value; state.selected = value === 'all' ? state.selected : value; state.pinnedColumn = null;
+function action(message, remoteCamera = false) {
+  if (!applyAction(state, message)) return;
+  const {type} = message;
+  if (type === 'camera') {
+    if (remoteCamera) {
+      cameraSync.clear();
+      updateDashboard.setCamera(state.camera);
+    } else cameraSync.publish(state.camera);
+    return;
   }
   paint();
-  if (['select', 'branch'].includes(type)) refresh();
+  if (['select', 'branch', 'inspect'].includes(type)) refresh();
 }
 window.addEventListener('message', event => {
-  if (event.origin !== location.origin || event.source !== audience) return;
+  if (!audience || event.origin !== location.origin || event.source !== audience) return;
+  if (cameraSync.receive(event)) return;
   if (event.data?.type === 'evidence-ready-v1') paint();
-  if (event.data?.type === 'evidence-action-v1') action(event.data.action);
+  if (event.data?.type === 'evidence-action-v1') action(event.data.action, true);
 });
 $('#audience-open').onclick = () => {
   audience = window.open('dashboard-audience.html', 'lesson-evidence-audience');
@@ -153,4 +163,10 @@ function renderControls() {
     section.append(label, control); root.append(section);
   }
 }
+// Load the portable script only at the private desk. Notes/evidence prompts are
+// discarded before state, rendering or audience messaging.
+fetch('/lessons/de-for-fun/purchase-evidence/presenter.json', {cache:'no-store'})
+  .then(response => { if (!response.ok) throw Error('lesson unavailable'); return response.json(); })
+  .then(lesson => { state.lesson = publicLesson(lesson); paint(); })
+  .catch(() => {}); // Slides retain their explicit unavailable state.
 paint(); renderControls(); refresh();

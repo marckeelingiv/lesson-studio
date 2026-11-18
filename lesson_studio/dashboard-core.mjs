@@ -1,5 +1,23 @@
 // Pure view rules shared by the dashboard and native Node tests.
+import {cards, route} from './dashboard-board.mjs';
+import {fit, validCamera} from './dashboard-camera.mjs';
 export const steps = ['Question', 'Evidence', 'Definition', 'Answer', 'Trust / limits'];
+
+// Only public portable slide fields survive loading or display projection.
+export function publicLesson(lesson) {
+  const text = value => typeof value === 'string' ? value.slice(0, 10000) : '';
+  return {
+    title:text(lesson?.title), disclosure:text(lesson?.disclosure),
+    scenes:(Array.isArray(lesson?.scenes) ? lesson.scenes : []).slice(0, 5).map(scene => ({
+      kicker:text(scene?.kicker), title:text(scene?.title), body:text(scene?.body),
+      points:(Array.isArray(scene?.points) ? scene.points : []).filter(value => typeof value === 'string').slice(0, 30).map(text),
+    })),
+  };
+}
+
+export function cameraState(value) {
+  return validCamera(value) ? {cx:value.cx, cy:value.cy, zoom:value.zoom} : undefined;
+}
 
 export function companionURL(value) {
   const url = new URL(value);
@@ -70,6 +88,9 @@ export function audienceState(state) {
   const {page, selected, branch, sqlTab, pinnedColumn, graph, model,
     observations, provenance, services, status, observedAt, busy} = state;
   return {page, selected, branch, sqlTab, pinnedColumn, graph, model,
+    camera:cameraState(state.camera),
+    activeCard:cards.some(card => card.id === state.activeCard) ? state.activeCard : undefined,
+    lesson:publicLesson(state.lesson),
     observations, status, observedAt, busy,
     provenance: provenance ? Object.fromEntries([
       'label', 'mode', 'snapshot_exists', 'snapshot_modified_at',
@@ -87,6 +108,11 @@ export function audienceState(state) {
 export function validAction(action, state) {
   if (!action || typeof action !== 'object') return false;
   const {type, value} = action;
+  if (type === 'camera') return validCamera(value);
+  if (type === 'focus') return cards.some(card => card.id === value);
+  if (type === 'route') return route.includes(value);
+  if (type === 'inspect') return ['table', 'sql'].includes(value?.card) &&
+    state.graph.nodes.some(node => node.id === value.model);
   if (type === 'page') return [...steps, 'Explore'].includes(value);
   if (type === 'select') return state.graph.nodes.some(node => node.id === value);
   if (type === 'branch') return value === 'all' || state.graph.nodes.some(node => node.id === value);
@@ -94,6 +120,28 @@ export function validAction(action, state) {
   if (type === 'column') return value === null || state.model?.columns?.some(column => column.name === value) ||
     state.observations[state.selected]?.columns?.some(column => column.name === value);
   return false;
+}
+
+// The private controller is authoritative; audience actions use this same seam.
+export function applyAction(state, action) {
+  if (!validAction(action, state)) return false;
+  const {type, value} = action;
+  if (type === 'camera') state.camera = cameraState(value);
+  if (['focus', 'route', 'page', 'inspect'].includes(type)) {
+    const id = type === 'page' ? (value === 'Explore' ? 'lineage' : cards.find(card => card.page === value)?.id) :
+      type === 'inspect' ? value.card : value;
+    state.activeCard = id; state.camera = fit(cards.find(card => card.id === id));
+  }
+  if (type === 'page') state.page = value;
+  if (type === 'sqlTab') state.sqlTab = value;
+  if (type === 'column') state.pinnedColumn = value;
+  if (type === 'select' || type === 'inspect') {
+    state.selected = type === 'inspect' ? value.model : value; state.pinnedColumn = null;
+  }
+  if (type === 'branch') {
+    state.branch = value; state.selected = value === 'all' ? state.selected : value; state.pinnedColumn = null;
+  }
+  return true;
 }
 
 export function errorMessage(code) {

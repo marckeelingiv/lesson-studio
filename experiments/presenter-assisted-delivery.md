@@ -12,6 +12,15 @@ Private prompts and a clean audience view can improve Marc's explanation clarity
 
 Private notes must remain separate from audience content while this interface is used. Its layout and recording method are implementation choices, not requirements for other approaches.
 
+Implementation note (2026-11-17): the evidence desk now integrates the portable
+purchase-evidence public slides into a persistent modular canvas, separate
+evidence content rendering, validated camera-only two-window synchronization,
+and in-place evidence refresh. Native checks cover projection/privacy, message
+ordering, compound focus and retained scroll/focus. This is implementation
+verification, not a visual review or evidence of communication benefit; actual
+audience framing/capture and subject realism/exposure still require separate
+review. See the operating guide's **Canvas implementation seams**.
+
 ## Alternatives
 
 Ordinary slides with speaker notes; a live code/demo walkthrough; direct screen recording with OBS; scripted narration over recorded evidence; a presentation without video or slides. Post-production is optional and can be tested separately.
