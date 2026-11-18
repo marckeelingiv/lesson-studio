@@ -7,6 +7,28 @@ A local recording desk: one private presenter console, one clean audience window
 
 ## Start
 
+### Optional complete DE for Fun rehearsal
+
+The subject checkout owns stack/setup/rebuild automation. After its one-time
+explicit path and private API-key setup (`docs/lesson.md` in DE for Fun), either
+run `just lesson` there, or from this repository:
+
+```sh
+export DE_FOR_FUN_DIR=/absolute/path/to/de-for-fun-companion
+just                 # list only
+just lesson          # verify/reuse historical demo, wait for services, open tabs
+just lesson-stop     # only recorded lesson processes / confirmed lesson sandbox
+just lesson-rebuild  # explicit fresh isolated demo serving build; not live ingestion
+```
+
+No subject worktree path is embedded here. These recipes only delegate; the
+static Studio server remains independent and presentation-only. First login and
+personal API-key creation are human steps. No dashboard/chart publication,
+schedule activation or unrelated Supabase stop is included. Start/rebuild/auth
+limitations and persistent private state belong to the subject's `docs/lesson.md`.
+
+### Studio only
+
 From the repository root:
 
 ```bash
