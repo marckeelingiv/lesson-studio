@@ -116,6 +116,8 @@ can be imported into the original presenter; its starter lesson is unchanged.
 4. The bridge accepts messages only from the exact expected window and exact
    same origin. Only allowlisted display state and validated selections cross.
    Service-start controls, session tokens, operator config and notes do not.
+   Provenance is projected onto rendered evidence fields only; absolute snapshot
+   and manifest paths (and future unrecognized provenance fields) stay private.
    Clean audience code has no fetch/session/start API. It requires its opener;
    opening it directly shows an honest waiting page.
 
@@ -134,7 +136,7 @@ strings or fragments. It is not persisted. Use exactly
 allow `localhost:4173`, other ports, or `file://`.
 
 Subject prerequisites, API v1 routes/payloads, service ownership and explicit
-launch commands are owned by [DE for Fun's evidence contract at d59530c](https://github.com/marckeelingiv/de-for-fun/blob/d59530c/docs/evidence-dashboard.md).
+launch commands are owned by [DE for Fun's evidence contract at 14ce47d](https://github.com/marckeelingiv/de-for-fun/blob/14ce47d4f59c18c9cc29be8899ea53ca0d6255bc/docs/evidence-dashboard.md).
 Prepare/start that companion explicitly in the subject repository; this static
 server has no shell imports, subject paths, API proxy, service execution or
 snapshot fallback.
@@ -179,7 +181,10 @@ results**. No metric answer is computed or fabricated by this frontend.
 - Dagster is a real control UI using a **separate runtime database**, not a copy
   of the evidence snapshot. Builds need normal MinIO/data prerequisites. The
   frontend never materializes data or activates schedules.
-- Docs only serves existing `manifest.json`, `catalog.json` and `index.html`.
+- The dbt docs UI is served by the companion's guarded artifact server, not
+  raw `dbt docs serve`. It only serves existing `manifest.json`, `catalog.json`
+  and `index.html` on loopback with strict Host checks, no directory listings,
+  and no symlinks. Databases and Dagster storage are never served.
   Missing artifacts require separate subject-side preparation. It never runs
   generation, and docs can differ from the selected evidence manifest.
 - Lightdash is external and is **not started or configured here**. The current

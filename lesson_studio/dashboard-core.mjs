@@ -70,7 +70,12 @@ export function audienceState(state) {
   const {page, selected, branch, sqlTab, pinnedColumn, graph, model,
     observations, provenance, services, status, observedAt, busy} = state;
   return {page, selected, branch, sqlTab, pinnedColumn, graph, model,
-    observations, provenance, status, observedAt, busy,
+    observations, status, observedAt, busy,
+    provenance: provenance ? Object.fromEntries([
+      'label', 'mode', 'snapshot_exists', 'snapshot_modified_at',
+      'snapshot_build_provenance', 'snapshot_built_from_manifest',
+      'manifest_generated_at', 'manifest_loaded_at', 'manifest_sha256',
+    ].map(key => [key, provenance[key]])) : provenance,
     services: Object.fromEntries(Object.entries(services || {}).map(([name, service]) => [name, {
       name, url: safeLink(service.url), dashboard_url: safeLink(service.dashboard_url),
       reachable: service.reachable, state: service.state,
@@ -104,6 +109,7 @@ export function errorMessage(code) {
     missing_prerequisites: 'Service prerequisites are missing. Check the subject setup guide.',
     port_in_use_unowned: 'Port occupied by an unowned process. It was not adopted or stopped.',
     service_start_failed: 'Service failed to start. Inspect the subject environment separately.',
+    server_closing: 'Companion is shutting down. No new service will be started.',
     token_denied: 'Session expired or denied. Retry the explicit Start action.',
   })[code] || `Unavailable (${code || 'unexpected response'}). No result substituted.`;
 }

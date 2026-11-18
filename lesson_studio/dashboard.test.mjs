@@ -56,10 +56,24 @@ test('audience serialization is allowlisted: no runtime secrets, start controls,
   const serialized = JSON.stringify(audienceState({
     page:'Question', graph, token:'private-token', base:'private-origin', notes:'private-notes',
     requests:{headers:{'X-Evidence-Token':'private-header'}},
+    provenance:{label:'saved local snapshot', mode:'saved_snapshot_read_only',
+      snapshot_path:'/private/snapshot.duckdb', snapshot_exists:true,
+      snapshot_modified_at:'2026-11-17T10:00:00Z', snapshot_build_provenance:'unknown',
+      snapshot_built_from_manifest:'unknown', manifest_path:'/private/manifest.json',
+      manifest_sha256:'abc123', manifest_generated_at:'2026-11-16T10:00:00Z',
+      manifest_loaded_at:'2026-11-17T11:00:00Z', warning:'private-unrendered-warning',
+      future_config:'private-future-config'},
     services:{dagster:{url:'http://127.0.0.1:3000', runtime_database:'/private/runtime', owned:true, state:'running'},
       lightdash:{dashboard_url:'http://127.0.0.1:8080/?secret=abc'}},
   }));
-  for (const word of ['private-token','private-origin','private-notes','private-header','private/runtime','owned']) assert.equal(serialized.includes(word), false);
+  for (const word of ['private-token','private-origin','private-notes','private-header','private/runtime',
+    'private/snapshot','private/manifest','private-unrendered-warning','private-future-config','owned']) assert.equal(serialized.includes(word), false);
+  assert.deepEqual(JSON.parse(serialized).provenance, {
+    label:'saved local snapshot', mode:'saved_snapshot_read_only', snapshot_exists:true,
+    snapshot_modified_at:'2026-11-17T10:00:00Z', snapshot_build_provenance:'unknown',
+    snapshot_built_from_manifest:'unknown', manifest_sha256:'abc123',
+    manifest_generated_at:'2026-11-16T10:00:00Z', manifest_loaded_at:'2026-11-17T11:00:00Z',
+  });
   assert.equal(JSON.parse(serialized).services.lightdash.dashboard_url, null);
 });
 

@@ -130,7 +130,7 @@ function renderControls() {
     control.onclick = async () => {
       const warning = name === 'dagster' ?
         'Start the real Dagster control UI? It uses a SEPARATE runtime database, not the evidence snapshot. It does not copy the snapshot or run builds. Real builds need normal MinIO/data prerequisites.' :
-        'Start dbt Docs serving existing artifacts? No docs generation or rebuild will run. Docs may describe a different artifact set.';
+        'Start the dbt docs UI through the guarded artifact server? Only existing docs artifacts are served, not databases or Dagster storage. No generation or rebuild will run. Docs may describe a different artifact set.';
       if (!window.confirm(warning)) return;
       const origin = base;
       starts[name] = 'starting'; renderControls();
