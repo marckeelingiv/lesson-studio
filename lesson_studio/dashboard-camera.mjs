@@ -61,13 +61,13 @@ export function mountCamera(surface, world, initial, onChange = () => {}) {
       drag.moved = true; surface.classList.add('panning');
       set(pan(drag.start, dx / scale(), dy / scale()));
     },
-    pointerup(event) {
+    pointerup(event, canceled = false) {
       if (!drag || drag.id !== event.pointerId) return;
-      suppressClick = drag.moved;
+      suppressClick = !canceled && drag.moved;
       drag = null; surface.classList.remove('panning');
       if (surface.hasPointerCapture(event.pointerId)) surface.releasePointerCapture(event.pointerId);
     },
-    pointercancel(event) { handlers.pointerup(event); },
+    pointercancel(event) { handlers.pointerup(event, true); },
     lostpointercapture() { drag = null; surface.classList.remove('panning'); },
     click(event) {
       if (suppressClick) { event.preventDefault(); event.stopImmediatePropagation(); suppressClick = false; }
