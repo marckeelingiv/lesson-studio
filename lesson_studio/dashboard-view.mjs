@@ -1,4 +1,6 @@
-import {steps, layer, branchGraph, columnMetadata, safeLink, errorMessage} from './dashboard-core.mjs';
+import {layer, branchGraph, columnMetadata, safeLink, errorMessage} from './dashboard-core.mjs';
+import {cards, routeNext, boardBounds} from './dashboard-board.mjs';
+import {fit, zoomAt, mountCamera} from './dashboard-camera.mjs';
 
 // All companion/lesson text is assigned through textContent, including SQL,
 // table cells, SVG labels, metadata and errors. No payload HTML is interpreted.
@@ -26,61 +28,95 @@ function link(text, url) {
 }
 function json(value) { return JSON.stringify(value, null, 2); }
 
-export function renderDashboard(root, state, dispatch) {
-  const focus = root.contains(document.activeElement) ? document.activeElement?.dataset.focus : null;
-  root.replaceChildren();
+export function mountDashboard(root, dispatch) {
   const act = (type, value) => dispatch({type, value});
   const mast = el('div', undefined, 'mast');
   mast.append(el('p', 'PROJECT SANDBOX / EVIDENCE NOTEBOOK', 'eyebrow'),
     el('span', 'LOCAL · SYNTHETIC · SAVED SNAPSHOT', 'badge'));
-  const nav = el('nav', undefined, 'story-nav'); nav.setAttribute('aria-label', 'Business story and exploration');
-  for (const [index, step] of [...steps, 'Explore'].entries()) {
-    const item = button(`${index < 5 ? `0${index + 1} / ` : '↗ '}${step}`, () => act('page', step), state.page === step);
-    item.setAttribute('aria-current', String(state.page === step)); item.dataset.focus = step; nav.append(item);
+  const toolbar = el('nav', undefined, 'camera-tools');
+  toolbar.setAttribute('aria-label', 'Canvas camera and story route');
+  const surface = el('div', undefined, 'board-viewport'), world = el('div', undefined, 'board-world');
+  surface.tabIndex = 0; surface.setAttribute('aria-label', 'Evidence canvas. Drag empty background to pan. Arrow keys pan; Home fits board; plus and minus zoom.');
+  surface.append(world);
+  const status = el('p', undefined, 'board-status'); status.setAttribute('role', 'status');
+  root.replaceChildren(mast, toolbar, surface, status);
+  const slots = {}, cardNodes = {};
+  let active = 'question';
+  const camera = mountCamera(surface, world, fit(boardBounds()), value => {
+    zoomLabel.textContent = `${Math.round(value.zoom * 100)}%`;
+  });
+  const zoomLabel = el('output', `${Math.round(camera.get().zoom * 100)}%`);
+  function focusCard(id) {
+    const card = cards.find(item => item.id === id);
+    if (!card) return;
+    active = id; camera.set(fit(card));
+    for (const [key, node] of Object.entries(cardNodes)) node.setAttribute('data-active', String(key === id));
   }
-  root.append(mast, nav);
-  const surfaces = el('nav', undefined, 'surface-links');
-  surfaces.setAttribute('aria-label', 'Open evidence services');
-  for (const [name, label] of [['dagster','Dagster ↗ · separate runtime DB'], ['docs','dbt Docs ↗ · separate artifacts']]) {
-    const service = state.services[name];
-    surfaces.append(safeLink(service?.url) ? link(label, service.url) : el('span', `${name}: unavailable`, 'muted'));
+  const zoomOut = button('−', () => camera.set(zoomAt(camera.get(), 1 / 1.2)));
+  zoomOut.setAttribute('aria-label', 'Zoom out');
+  const zoomIn = button('+', () => camera.set(zoomAt(camera.get(), 1.2)));
+  zoomIn.setAttribute('aria-label', 'Zoom in');
+  toolbar.append(button('← Previous', () => focusCard(routeNext(active, -1))),
+    button('Next →', () => focusCard(routeNext(active, 1))),
+    zoomOut, zoomLabel, zoomIn,
+    button('Home / fit board', () => camera.set(fit(boardBounds()))),
+    el('small', 'Drag background · scroll to pan · Ctrl/⌘ scroll to zoom · Focus a card to read'));
+  for (const card of cards) {
+    const node = el('section', undefined, `board-card ${card.page ? 'slide-card' : ''}`);
+    node.dataset.card = card.id;
+    Object.assign(node.style, {left:`${card.x}px`, top:`${card.y}px`, width:`${card.width}px`, height:`${card.height}px`});
+    const head = el('header', undefined, 'card-head');
+    head.append(el('h2', card.title), button('Focus', () => focusCard(card.id)));
+    const content = el('div', undefined, 'card-content'); content.tabIndex = 0;
+    content.setAttribute('aria-label', `${card.title} content`);
+    node.append(head, content); world.append(node); slots[card.id] = content; cardNodes[card.id] = node;
   }
-  surfaces.append(safeLink(state.services.lightdash?.dashboard_url) ?
-    link('Lightdash dashboard ↗', state.services.lightdash.dashboard_url) :
-    button('Lightdash setup / business question', () => act('page', 'Answer')));
-  surfaces.append(el('small', 'Open ≠ Start. TCP availability is not authenticated readiness. Dagster can perform real work.'));
-  root.append(surfaces);
-  const status = el('p', state.busy ? 'Observing saved evidence sequentially…' : state.status, 'provenance');
-  status.setAttribute('role', 'status'); root.append(status);
   const titles = {
     Question: ['Evidence, before the answer.', 'Which purchase patterns deserve a closer look?'],
     Evidence: ['Follow the purchase evidence.', 'A declared dependency is not proof of a running pipeline. Inspect the saved tables behind the question.'],
     Definition: ['Define the number before trusting it.', 'Read the transformation, inspect its grain, and compare documented columns with the observed snapshot.'],
     Answer: ['Turn a question into a defensible insight.', 'Inspect a configured Lightdash dashboard only after its metric definition and warehouse connection are verified.'],
     'Trust / limits': ['Make the limits part of the answer.', 'This is a local portfolio sandbox with synthetic data, not a claim of production adoption or customer impact.'],
-    Explore: ['Open the evidence.', 'Select a node for its bounded table. Select a wire for the downstream transformation.'],
   };
-  const hero = el('section', undefined, 'hero');
-  hero.append(el('p', state.page === 'Explore' ? 'MANIFEST → TABLE → DEFINITION' : `THE BUSINESS STORY / ${state.page.toUpperCase()}`, 'eyebrow'),
-    el('h1', titles[state.page][0]), el('p', titles[state.page][1], 'lead'));
-  root.append(hero);
-  if (state.page === 'Question') {
-    hero.append(el('p', 'Proposed question: how do arena purchase patterns vary across the dimensions actually documented in the purchase mart? Verify the model grain and measures before choosing a chart.', 'big-question'));
-    const actions = el('div', undefined, 'actions');
-    actions.append(button('Follow the evidence →', () => act('page', 'Evidence')),
-      button('Explore saved tables', () => act('page', 'Explore')));
-    hero.append(actions);
-    const flow = panel('Question → Evidence → Definition → Answer → Trust');
-    flow.append(el('p', 'Start with a business decision, trace its dependencies, inspect the SQL and column contract, then open the real analytical surface. If the evidence or setup is missing, stop at the prerequisite—not a simulated answer.'));
-    root.append(flow);
+  for (const card of cards.filter(item => item.page)) {
+    const [title, body] = titles[card.page], slot = slots[card.id];
+    slot.append(el('p', 'THE BUSINESS STORY / SLIDE PLACEHOLDER', 'eyebrow'), el('h1', title), el('p', body, 'lead'));
   }
-  if (['Evidence', 'Explore'].includes(state.page)) renderGraph(root, state, act);
-  if (['Evidence', 'Definition', 'Explore'].includes(state.page)) renderDetail(root, state, act);
-  if (state.page === 'Answer') renderAnswer(root, state);
-  renderProvenance(root, state, state.page === 'Trust / limits');
-  renderServices(root, state);
-  root.append(el('p', 'Counts are completed read-only observations, not event throughput. Wires show manifest lineage only. No automatic builds, service starts, chart fabrication, or continuous row-flow animation.', 'footer-note'));
-  if (focus) [...root.querySelectorAll('[data-focus]')].find(node => node.dataset.focus === focus)?.focus({preventScroll:true});
+  slots.question.append(el('p', 'Proposed question: how do arena purchase patterns vary across the dimensions actually documented in the purchase mart? Verify the model grain and measures before choosing a chart.', 'big-question'),
+    el('p', 'Start with a business decision, trace its dependencies, inspect the SQL and column contract, then open the real analytical surface. If the evidence or setup is missing, stop at the prerequisite—not a simulated answer.'));
+  slots.evidence.append(button('Inspect lineage →', () => focusCard('lineage')));
+  slots.definition.append(button('Inspect transformation →', () => focusCard('sql')));
+  slots.answer.append(button('Inspect Lightdash prerequisites →', () => focusCard('tools')));
+  slots.trust.append(button('Read provenance and limits →', () => focusCard('provenance')));
+  let lastPage, lastContent;
+  function update(state) {
+    status.textContent = state.busy ? 'Observing saved evidence sequentially…' : state.status;
+    if (state.page !== lastPage) {
+      focusCard(state.page === 'Explore' ? 'lineage' : cards.find(card => card.page === state.page)?.id);
+      lastPage = state.page;
+    }
+    // ponytail: stable cards, transitional slot rendering. Deep keyed evidence
+    // reconciliation (including inner scroll/focus) is the next content wave.
+    const content = JSON.stringify([state.graph, state.branch, state.selected, state.model, state.observations,
+      state.sqlTab, state.pinnedColumn, state.provenance, state.services]);
+    if (content === lastContent) return;
+    lastContent = content;
+    const focus = root.contains(document.activeElement) ? document.activeElement?.dataset.focus : null;
+    for (const id of ['lineage', 'table', 'sql', 'governance', 'provenance', 'tools']) slots[id].replaceChildren();
+    renderGraph(slots.lineage, state, act);
+    renderDetail(slots.table, state, act, slots);
+    if (!slots.sql.children.length) slots.sql.append(el('p', 'Select a queryable manifest model to inspect its actual SQL. No substitute transformation.', 'empty'));
+    if (!slots.governance.children.length) slots.governance.append(el('p', 'Select a queryable manifest model, then hover or focus a column to inspect its documented contract. No inferred metadata.', 'empty'));
+    renderProvenance(slots.provenance, state, true);
+    renderAnswer(slots.tools, state);
+    renderServices(slots.tools, state);
+    slots.tools.append(el('p', 'Open ≠ Start. TCP availability is not authenticated readiness. Dagster can perform real work.', 'warning'));
+    if (focus) [...root.querySelectorAll('[data-focus]')].find(node => node.dataset.focus === focus)?.focus({preventScroll:true});
+  }
+  update.camera = camera;
+  update.focus = focusCard;
+  update.destroy = () => camera.destroy();
+  return update;
 }
 
 function renderGraph(root, state, act) {
@@ -145,7 +181,7 @@ function renderGraph(root, state, act) {
   root.append(section);
 }
 
-function renderDetail(root, state, act) {
+function renderDetail(root, state, act, slots) {
   const node = state.graph.nodes.find(node => node.id === state.selected);
   const model = state.model?.id === state.selected ? state.model : null;
   const observation = state.observations[state.selected];
@@ -219,7 +255,8 @@ function renderDetail(root, state, act) {
   }
   showColumn(observation?.columns?.find(column => column.name === state.pinnedColumn) ||
     (model?.columns.find(column => column.name === state.pinnedColumn) ? {name:state.pinnedColumn, type:'unavailable'} : null));
-  grid.append(tablePanel, governance); section.append(grid);
+  if (slots) { section.append(tablePanel); slots.governance.append(governance); }
+  else { grid.append(tablePanel, governance); section.append(grid); }
   if (model) {
     const sql = panel('Transformation / inspect, never execute');
     const tabs = el('div', undefined, 'sql-tabs');
@@ -235,7 +272,7 @@ function renderDetail(root, state, act) {
     el('pre', (source ? model.source_sql.text : model.manifest_sql[state.sqlTab]) ?? 'SQL unavailable — no substitute text.'),
     el('p', `Model owner: ${model.owner} · classification: ${model.classification}`, 'provenance'),
     el('h3', 'All model test declarations (not execution results)'), el('pre', model.tests.length ? json(model.tests) : 'not documented'));
-    section.append(sql);
+    (slots?.sql || section).append(sql);
   }
   root.append(section);
 }

@@ -80,7 +80,7 @@ test('audience serialization is allowlisted: no runtime secrets, start controls,
 // A tiny DOM stub fails immediately if a renderer attempts innerHTML. This is
 // a structural/security check, not a substitute for browser visual review.
 class Node {
-  constructor(tag) { this.tagName = tag; this.children = []; this.dataset = {}; this.attributes = {}; this._text = ''; this.classList = {add:() => {}}; }
+  constructor(tag) { this.tagName = tag; this.children = []; this.dataset = {}; this.style = {}; this.attributes = {}; this._text = ''; this.classList = {add:() => {}, remove:() => {}}; this.listeners = {}; }
   set textContent(value) { this._text = String(value); this.children = []; }
   get textContent() { return this._text + this.children.map(child => child.textContent).join(''); }
   set innerHTML(_) { throw Error('Payload HTML must never be interpreted'); }
@@ -89,14 +89,19 @@ class Node {
   setAttribute(key, value) { this.attributes[key] = value; }
   contains() { return false; }
   querySelectorAll() { return []; }
+  addEventListener(type, handler) { this.listeners[type] = handler; }
+  removeEventListener(type) { delete this.listeners[type]; }
+  getBoundingClientRect() { return {left:0, top:0, width:1600, height:900}; }
 }
 const walk = root => [root, ...root.children.flatMap(walk)];
 
 test('native renderer escapes table/SQL/metadata, wires select downstream, keyboard reveals metadata', async () => {
   const previous = globalThis.document;
+  const previousObserver = globalThis.ResizeObserver;
+  globalThis.ResizeObserver = class {observe() {} disconnect() {}};
   globalThis.document = {createElement:tag => new Node(tag), createElementNS:(_, tag) => new Node(tag)};
   try {
-    const {renderDashboard} = await import('./dashboard-view.mjs');
+    const {mountDashboard} = await import('./dashboard-view.mjs');
     const root = new Node('main'), actions = [], evil = '<img src=x onerror=alert(1)>';
     const state = {page:'Explore', selected:'purchase', branch:'purchase', sqlTab:'source', pinnedColumn:null,
       graph, observations:{purchase:{row_count:1, columns:[{name:'amount',type:'DECIMAL'}], rows:[[evil]],
@@ -105,7 +110,15 @@ test('native renderer escapes table/SQL/metadata, wires select downstream, keybo
         columns:[{name:'amount', description:evil}], tests:[],
         source_sql:{text:evil, status:'current_worktree_source'}, manifest_sql:{compiled:'SELECT 1'},
       }, services:{}, status:'done'};
-    renderDashboard(root, state, action => actions.push(action));
+    const update = mountDashboard(root, action => actions.push(action));
+    update(state);
+    const shells = walk(root).filter(node => node.dataset.card);
+    const table = walk(root).find(node => node.tagName === 'table');
+    update.camera.set({cx:50, cy:70, zoom:0.5});
+    update({...state, busy:true});
+    assert.deepEqual(walk(root).filter(node => node.dataset.card), shells);
+    assert.equal(walk(root).find(node => node.tagName === 'table'), table);
+    assert.deepEqual(update.camera.get(), {cx:50, cy:70, zoom:0.5});
     assert.ok(root.textContent.includes(evil));
     assert.equal(walk(root).some(node => node.tagName === 'img'), false);
     const header = walk(root).find(node => node.dataset.focus === 'column:amount');
@@ -119,7 +132,7 @@ test('native renderer escapes table/SQL/metadata, wires select downstream, keybo
     assert.equal(prevented, true);
     assert.deepEqual(actions.slice(-2), [{type:'select', value:'base'}, {type:'page', value:'Definition'}]);
     assert.ok(root.textContent.includes('Snapshot build provenance: unknown'));
-  } finally { globalThis.document = previous; }
+  } finally { globalThis.document = previous; globalThis.ResizeObserver = previousObserver; }
 });
 
 test('offline controller clears previous evidence; one coordinator serializes and queues observations', async () => {
@@ -138,7 +151,7 @@ test('offline controller clears previous evidence; one coordinator serializes an
   // browser, subject service, snapshot, token, or network target is opened.
   let source = await readFile(new URL('./dashboard.mjs', import.meta.url), 'utf8');
   source = source.replace("'./dashboard-core.mjs'", JSON.stringify(new URL('./dashboard-core.mjs', import.meta.url).href))
-    .replace("'./dashboard-view.mjs'", JSON.stringify('data:text/javascript,export function renderDashboard(){}'));
+    .replace("'./dashboard-view.mjs'", JSON.stringify('data:text/javascript,export function mountDashboard(){return ()=>{}}'));
   try {
     const controller = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
     await new Promise(resolve => setImmediate(resolve));
@@ -225,7 +238,7 @@ test('clean audience module contains no session fetch/start or storage; strict s
     window:{opener:owner, addEventListener:(_, listener) => { receive = listener; }},
     location:{origin:'http://127.0.0.1:4173'},
     document:{querySelector:() => ({})},
-    renderDashboard:(_, state, send) => { renders++; send({type:'page', value:'Answer'}); },
+    mountDashboard:(_, send) => () => { renders++; send({type:'page', value:'Answer'}); },
   });
   const message = {type:'evidence-view-v1', state:{}};
   receive({origin:'https://evil.example', source:owner, data:message});

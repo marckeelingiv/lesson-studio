@@ -92,8 +92,14 @@ Automated checks can validate lesson JSON and serving behavior. Camera hardware,
 Launch the same static server with `node lesson_studio/serve.mjs`. Open
 **http://127.0.0.1:4173/dashboard.html** (also linked as **Evidence desk** from the
 studio). No install/build step or subject checkout is required. The default
-landing is the business story: **Question → Evidence → Definition → Answer →
-Trust / limits**, with a separate **Explore** tab. The optional portable
+landing is a persistent pan/zoom canvas: five story placeholders (**Question →
+Evidence → Definition → Answer → Trust / limits**) above actual lineage,
+table, SQL, governance, provenance and external-tool cards. There are no page
+tabs. Drag empty background or scroll it to pan; Ctrl/⌘-scroll zooms around the
+pointer. **Focus** fits a card, **Home / fit board** fits everything, and
+**Previous / Next** follows the ordered story/evidence route. With the viewport
+focused, arrows pan and Home / + / − control the camera. Table and SQL scrolling
+never pans the board. The optional portable
 [purchase-evidence script](../lessons/de-for-fun/purchase-evidence/presenter.json)
 can be imported into the original presenter; its starter lesson is unchanged.
 
@@ -102,12 +108,14 @@ can be imported into the original presenter; its starter lesson is unchanged.
 1. At the private evidence desk, click **Open clean audience**. The destination
    is `/dashboard-audience.html`, opened from the desk—not an independently
    configured iframe. Keep the desk open.
-2. Either window can change story steps, branch, selected node, SQL tab and
+2. Either window can change branch, selected node, SQL tab and
    pinned column. Node selection opens its bounded table; a wire opens the
    downstream model's SQL in Definition. Hover/focus column headers for
    documented metadata; click to pin/release the card. When observation fails,
    documented column buttons remain inspectable without pretending to know
    the saved schema. Temporary hover is local; pinning is synchronized.
+   Canvas framing is currently local to each window; camera synchronization and
+   portable slide loading are not implemented in this foundation.
 3. **Capture the evidence audience window**, not the private desk. Use OBS window
    capture, or select the evidence audience tab through the original presenter's
    **Choose screen / window / tab** and record the original studio audience as
@@ -201,7 +209,7 @@ results**. No metric answer is computed or fabricated by this frontend.
 ### Native checks
 
 ```sh
-node --test lesson_studio/serve.test.mjs lesson_studio/dashboard.test.mjs
+node --test lesson_studio/serve.test.mjs lesson_studio/dashboard.test.mjs lesson_studio/dashboard-camera.test.mjs
 ```
 
 These cover static routes, branch/action rules, URL boundaries, metadata joins,
@@ -210,3 +218,15 @@ observation coordination with fake responses. No subject services or browser
 targets are started. Actual layout, clean-window interaction/capture, popup
 behavior, keyboard usability in a browser and external app readiness remain
 separate verification work. No visual quality is established by these checks.
+
+### Canvas implementation seams
+
+- `dashboard-board.mjs`: plain stable card rectangles and ordered route.
+- `dashboard-camera.mjs`: pure fit/pan/anchored-zoom rules and mounted native
+  input/transform controller. Camera units use a 1600×900 logical viewport;
+  resize preserves `{cx, cy, zoom}`. This module never observes evidence.
+- `dashboard-view.mjs`: `mountDashboard(root, dispatch)` returns `update(state)`.
+  Mount once per window. The viewport, world, cards and content slots persist;
+  `update.camera`, `update.focus(id)` and `update.destroy()` expose framing and
+  cleanup. Evidence renderers still replace slot interiors on content changes:
+  preserving inner scroll/focus through evidence refresh is follow-up work.

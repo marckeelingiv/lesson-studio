@@ -1,5 +1,5 @@
 import {steps, companionURL, branchGraph, purchaseBranch, audienceState, validAction, errorMessage} from './dashboard-core.mjs';
-import {renderDashboard} from './dashboard-view.mjs';
+import {mountDashboard} from './dashboard-view.mjs';
 
 const $ = selector => document.querySelector(selector);
 export const state = {
@@ -9,9 +9,10 @@ export const state = {
 };
 let base = 'http://127.0.0.1:4174', audience = null, pending = false, timer;
 const starts = {};
+const updateDashboard = mountDashboard($('#dashboard'), action);
 
 function paint() {
-  renderDashboard($('#dashboard'), audienceState(state), action);
+  updateDashboard(audienceState(state));
   if (audience && !audience.closed) audience.postMessage({type:'evidence-view-v1', state:audienceState(state)}, location.origin);
 }
 function action(message) {
