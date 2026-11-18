@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lesson Studio · Evidence desk (private)</title>
+<link rel="stylesheet" href="dashboard.css">
+<body>
+<header class="desk-bar"><a href="./">◈ LESSON STUDIO</a><span>PRIVATE EVIDENCE DESK</span><button id="audience-open">Open clean audience ↗</button></header>
+<details class="operator" open>
+  <summary>Private operator controls · keep outside capture</summary>
+  <form id="connection-form"><label>Loopback companion origin <input id="companion" type="url" value="http://127.0.0.1:4174" required></label><button>Connect / refresh</button><button type="button" id="refresh">Refresh observations</button><label><input id="poll" type="checkbox"> Observe sequentially every 15 seconds</label></form>
+  <p id="operator-status" role="status">Read-only evidence. No service starts on load.</p>
+  <div id="service-controls"></div>
+  <p>Capture the <strong>clean audience window</strong>, not this desk. Both views share selections and evidence; starts and tokens never cross the bridge. The companion accepts exactly http://127.0.0.1:4173.</p>
+</details>
+<main id="dashboard"></main>
+<script type="module" src="dashboard.mjs"></script>
+</body></html>

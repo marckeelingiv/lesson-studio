@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "title": "Purchase evidence, before the answer",
+  "disclosure": "LOCAL PORTFOLIO SANDBOX · SYNTHETIC DATA · SAVED SNAPSHOT",
+  "scenes": [
+    {
+      "type": "slide",
+      "kicker": "01 / QUESTION",
+      "title": "Which purchase patterns deserve a closer look?",
+      "body": "A business question comes before a tool tour.",
+      "points": ["Proposed analysis, not an observed trend", "Verify available dimensions and the purchase mart grain"],
+      "seconds": 15,
+      "notes": "Use the evidence desk's clean audience window for the interactive version. Lead with the proposed purchase question, not a revenue or impact claim. The Lightdash project is not configured yet.",
+      "evidence": "Choose a question supported by actual documented columns and a verified measure before recording a result."
+    },
+    {
+      "type": "slide",
+      "kicker": "02 / EVIDENCE",
+      "title": "Trace dependencies. Inspect the saved tables.",
+      "body": "Source → base → staging → mart",
+      "points": ["Wires are declared manifest lineage, not running event flow", "Counts come only from completed read-only observations", "Preview rows are bounded and unordered"],
+      "seconds": 25,
+      "notes": "In the standalone dashboard, select the purchase spotlight. Click a model to inspect its table, then try another branch or the full graph. If the companion or snapshot is unavailable, show the honest unavailable state.",
+      "evidence": "Actual API lineage IDs, snapshot labels, per-table observation timestamps, and observed counts. Do not quote prerecorded counts as current evidence."
+    },
+    {
+      "type": "slide",
+      "kicker": "03 / DEFINITION",
+      "title": "Define the number before trusting it.",
+      "body": "SQL and column contracts explain the analytical boundary.",
+      "points": ["A wire opens downstream SQL", "Hover, focus, or pin a column contract", "Declared tests are not test results"],
+      "seconds": 25,
+      "notes": "Compare current worktree source with compiled manifest SQL. Explain the grain and aggregation actually present. Show owner/classification only as documented; otherwise say not documented. Read any missing-column or SQL-reference warning aloud.",
+      "evidence": "Current SQL hash/time, loaded manifest hash, parsed YAML declarations, and actual snapshot schema comparison. No claim that source and snapshot are the same build."
+    },
+    {
+      "type": "slide",
+      "kicker": "04 / ANSWER",
+      "title": "Open a real business dashboard—or stop at setup.",
+      "body": "A configured Lightdash destination is not a verified insight.",
+      "points": ["Verify login, project, warehouse connection, and metric definition", "When setup is missing, show prerequisites—not a fake chart"],
+      "seconds": 20,
+      "notes": "The Answer step intentionally has no result until the subject's Lightdash prerequisites are complete. If a real configured dashboard is available, open it in a new tab and verify its business question. External interactions are not synchronized by the evidence bridge; capture the actual external tab separately.",
+      "evidence": "A real configured dashboard URL with no credentials or secret parameters, or the explicit missing-configuration panel."
+    },
+    {
+      "type": "slide",
+      "kicker": "05 / TRUST AND LIMITS",
+      "title": "Make the evidence boundaries visible.",
+      "body": "Local, synthetic, saved evidence—not production impact.",
+      "points": ["Snapshot build provenance is unknown", "Source SQL, manifest, docs, and saved database can differ", "Dagster uses a separate runtime database; TCP reachability is not authenticated readiness"],
+      "seconds": 20,
+      "notes": "Close on engineering judgment: the evidence is inspectable and its uncertainty is explicit. Starting Dagster or docs is a private confirmed operator action, never a slide or audience action. Do not run a build as part of this walkthrough.",
+      "evidence": "Readable provenance and mismatch warnings. A clean audience capture with no notes, service-start controls, tokens, or private operator UI."
+    }
+  ]
+}

@@ -5,7 +5,7 @@
 <title>Lesson Studio · Presenter</title>
 <link rel="stylesheet" href="studio.css">
 <body>
-<header class="topbar"><a class="brand" href="./">◈ <span>LESSON STUDIO</span></a><span class="pill">LOCAL / PRESENTER</span><span id="connection" role="status">Audience closed</span><button id="open">Open audience ↗</button></header>
+<header class="topbar"><a class="brand" href="./">◈ <span>LESSON STUDIO</span></a><span class="pill">LOCAL / PRESENTER</span><a href="dashboard.html" target="_blank" rel="noopener">Evidence desk ↗</a><span id="connection" role="status">Audience closed</span><button id="open">Open audience ↗</button></header>
 <main class="console">
   <aside class="rundown"><div class="eyebrow">01 / RUN OF SHOW</div><h1 id="lesson-title">Loading lesson…</h1><p class="muted">Select a scene to put it on the audience stage.</p><nav id="scenes" aria-label="Lesson scenes"></nav><div class="nav-buttons"><button id="previous">← Previous</button><button id="next">Next →</button></div><p class="muted small">← / → to change scenes outside fields.<br>Double-click audience stage for fullscreen.</p></aside>
   <section class="workspace"><div class="section-line"><span class="eyebrow">02 / AUDIENCE PREVIEW</span><span id="timing" class="mono">00:00</span></div><div id="preview" class="stage"></div><div class="section-line"><span class="pill live">PROGRAM</span><span class="muted small">Camera sits above the caption band.</span></div><div class="notes-card"><div class="eyebrow">PRESENTER NOTES · PRIVATE</div><h2 id="scene-title"></h2><p id="notes"></p><p id="evidence" class="evidence"></p><label class="check"><input id="guides" type="checkbox" checked> Preview safe zones (never shown to audience)</label></div></section>

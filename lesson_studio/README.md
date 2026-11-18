@@ -86,3 +86,122 @@ Copy `lesson_studio/`, `lessons/`, and `video_pipeline/` together as sibling dir
 ## Verification limits
 
 Automated checks can validate lesson JSON and serving behavior. Camera hardware, Linux capture permissions, the selected recording surface, microphone levels, third-party embedding, and final edit quality require a real recording rehearsal on your machine.
+
+## Interactive evidence desk
+
+Launch the same static server with `node lesson_studio/serve.mjs`. Open
+**http://127.0.0.1:4173/dashboard.html** (also linked as **Evidence desk** from the
+studio). No install/build step or subject checkout is required. The default
+landing is the business story: **Question → Evidence → Definition → Answer →
+Trust / limits**, with a separate **Explore** tab. The optional portable
+[purchase-evidence script](../lessons/de-for-fun/purchase-evidence/presenter.json)
+can be imported into the original presenter; its starter lesson is unchanged.
+
+### Private desk and clean capture
+
+1. At the private evidence desk, click **Open clean audience**. The destination
+   is `/dashboard-audience.html`, opened from the desk—not an independently
+   configured iframe. Keep the desk open.
+2. Either window can change story steps, branch, selected node, SQL tab and
+   pinned column. Node selection opens its bounded table; a wire opens the
+   downstream model's SQL in Definition. Hover/focus column headers for
+   documented metadata; click to pin/release the card. When observation fails,
+   documented column buttons remain inspectable without pretending to know
+   the saved schema. Temporary hover is local; pinning is synchronized.
+3. **Capture the evidence audience window**, not the private desk. Use OBS window
+   capture, or select the evidence audience tab through the original presenter's
+   **Choose screen / window / tab** and record the original studio audience as
+   usual. Interact in the evidence desk or its clean source window; shared video
+   is read-only. The dashboard does not add another recorder/camera system.
+4. The bridge accepts messages only from the exact expected window and exact
+   same origin. Only allowlisted display state and validated selections cross.
+   Service-start controls, session tokens, operator config and notes do not.
+   Clean audience code has no fetch/session/start API. It requires its opener;
+   opening it directly shows an honest waiting page.
+
+Do not embed separate dashboard instances in the console and audience and
+expect interaction to synchronize. Do not capture the private desk. External
+Dagster/docs/Lightdash tabs are real separate apps; their interactions are not
+bridged. Share/capture the actual external tab separately when needed. Existing
+generic website scenes retain their original independent-iframe behavior.
+
+### Optional companion and observation limits
+
+The private desk defaults to `http://127.0.0.1:4174`; its runtime origin field
+accepts literal loopback HTTP(S) origins only, without credentials, paths, query
+strings or fragments. It is not persisted. Use exactly
+**http://127.0.0.1:4173** for the studio browser origin—the subject API does not
+allow `localhost:4173`, other ports, or `file://`.
+
+Subject prerequisites, API v1 routes/payloads, service ownership and explicit
+launch commands are owned by [DE for Fun's evidence contract at d59530c](https://github.com/marckeelingiv/de-for-fun/blob/d59530c/docs/evidence-dashboard.md).
+Prepare/start that companion explicitly in the subject repository; this static
+server has no shell imports, subject paths, API proxy, service execution or
+snapshot fallback.
+
+The desk makes sequential read-only GETs to `/api/provenance`, `/api/services`,
+`/api/lineage`, `/api/models/{encoded-manifest-id}`, and
+`/api/models/{encoded-manifest-id}/observation`. It observes the selected model
+and visible branch models; full graph observes all returned queryable models.
+Sources are lineage-only. **Refresh observations** is manual; optional 15-second
+polling starts its next delay only after the previous pass completes. Selection
+changes during work queue one later pass. There is only one observation queue;
+no parallel preview loop or continuous row-flow animation.
+
+Counts are relation observations, not throughput. Previews contain at most 50
+unordered rows, without pagination/sorting/query parameters. Different requests
+are not an atomic cross-model snapshot. `429 query_busy`, missing/locked snapshot,
+unavailable relations, external-IO blocks and resource/time limits show honest
+unavailable states without fabricated counts. A failed observation clears that
+model's previous result; a companion connection failure clears evidence entirely.
+No automatic restart or retry storm runs when polling is off.
+
+The manifest is session-loaded; current SQL is read on demand; the saved database
+has unknown build provenance. Source and manifest SQL tabs show their own
+hash/time provenance, **not** “the SQL that built this snapshot.” Always-readable
+warnings preserve the snapshot label, unknown build relationship, schema mismatch
+lists and limited SQL-reference checks. dbt metadata comes from manifest-parsed
+YAML; absent fields say **not documented**, and tests are **declarations, not
+results**. No metric answer is computed or fabricated by this frontend.
+
+### Open versus Start; Lightdash setup handoff
+
+- **Open** follows a validated, secret-free loopback URL in a new tab. A reachable
+  TCP port is labeled **not authenticated**; it does not verify identity,
+  login, application readiness or warehouse connectivity.
+- **Start Dagster / Start docs** appear only on the private desk. Each requires a
+  confirmation, then fetches `/api/session` and POSTs exactly `{}` to
+  `/api/services/{dagster|docs}/start` with `Content-Type: application/json` and
+  `X-Evidence-Token`. The token exists only in that handler's private runtime
+  memory, never lesson content, localStorage, URLs, logs or audience messages.
+  Starting/failed/missing-prerequisite/available states are distinct. Refresh
+  checks later process state/reachability; process creation is not readiness.
+- Dagster is a real control UI using a **separate runtime database**, not a copy
+  of the evidence snapshot. Builds need normal MinIO/data prerequisites. The
+  frontend never materializes data or activates schedules.
+- Docs only serves existing `manifest.json`, `catalog.json` and `index.html`.
+  Missing artifacts require separate subject-side preparation. It never runs
+  generation, and docs can differ from the selected evidence manifest.
+- Lightdash is external and is **not started or configured here**. The current
+  rehearsal has no configured project/dashboard and an offline service; do not
+  present it as a working analytical result. The Answer step proposes a business
+  question and shows missing prerequisites instead of a fake chart.
+  Complete the subject contract's **Services and explicit starts → Lightdash**
+  prerequisites: verify an existing project, warehouse connection and dashboard,
+  then provide `EVIDENCE_LIGHTDASH_URL`, `EVIDENCE_LIGHTDASH_PROJECT`, and
+  `EVIDENCE_LIGHTDASH_DASHBOARD` privately to the companion. No Lightdash token is
+  read or sent by this frontend. Once configured, **Open configured dashboard**
+  opens the actual returned dashboard URL; its content still requires review.
+
+### Native checks
+
+```sh
+node --test lesson_studio/serve.test.mjs lesson_studio/dashboard.test.mjs
+```
+
+These cover static routes, branch/action rules, URL boundaries, metadata joins,
+text-only rendering, audience serialization, offline clearing, and sequential
+observation coordination with fake responses. No subject services or browser
+targets are started. Actual layout, clean-window interaction/capture, popup
+behavior, keyboard usability in a browser and external app readiness remain
+separate verification work. No visual quality is established by these checks.

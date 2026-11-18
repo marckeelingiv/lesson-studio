@@ -23,6 +23,16 @@ test('serves the moved starter without exposing files outside static roots', asy
     const lesson = await response.json();
     assert.equal(lesson.scenes.length, 6);
     assert.equal(lesson.scenes.reduce((sum, scene) => sum + scene.seconds, 0), 115);
+    for (const path of ['/dashboard.html', '/dashboard-audience.html', '/dashboard.css',
+      '/dashboard.mjs', '/dashboard-audience.mjs', '/dashboard-view.mjs', '/dashboard-core.mjs']) {
+      const result = await fetch(`${base}${path}`);
+      assert.equal(result.status, 200, path);
+      if (path.endsWith('.mjs')) assert.match(result.headers.get('content-type'), /text\/javascript/);
+    }
+    assert.equal((await fetch(`${base}/api/lineage`)).status, 404); // Static server has no companion proxy.
+    assert.equal((await fetch(`${base}/api/services/docs/start`, {method:'POST'})).status, 405);
+    const story = await (await fetch(`${base}/lessons/de-for-fun/purchase-evidence/presenter.json`)).json();
+    assert.equal(story.scenes.length, 5);
     for (const path of ['/lessons/README.md', '/CONTENT_ASSETS.md', '/lessons/%2e%2e%2flesson_studio/serve.mjs', '/%2e%2e%2fCONTENT_ASSETS.md']) {
       assert.equal((await fetch(`${base}${path}`)).status, 404, path);
     }
