@@ -6,6 +6,13 @@ It is an independent [post-production experiment](../experiments/post-production
 
 ## 1. Recording Guidelines
 
+For agent-led production, invoke `@post-production` from this repository. The
+[producer skill](../.opencode/skills/post-production/SKILL.md) coordinates ten
+project-local specialist agents with rough-cut and final human review gates.
+It reuses the CLI below; optional treatments and editor integrations are not
+automatically implemented by the pipeline. See its capability reference before
+using multitrack edits, vertical layouts, or external NLE handoffs.
+
 Follow these habits while filming so the automated cut and graphic steps work reliably:
 
 - **Use spoken retake markers or pause before restarting (`A1`).**

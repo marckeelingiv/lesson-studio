@@ -28,4 +28,19 @@ Continue automation where it saves effort without sacrificing the explanation. S
 
 ## Trial record
 
+### 2026-11-18 — staged agent workflow decision
+
+Retain the existing pipeline as the execution backend and add a project-local
+[producer skill](../.opencode/skills/post-production/SKILL.md) with specialist
+agents, auditable edits, independent QC and human approval gates. The November 17
+recording's initial trim-only candidate did not meet the user's expectation of
+pause/filler removal; the later tightened candidate still needs human listening
+and end-to-end approval. This motivates measurable stage handoffs, not a claim
+that the new workflow improves output quality or retention.
+
+FilmCraft remains an optional evaluation, not a required dependency. Pilot the
+skill on the existing transcript and tightened cut after obtaining pacing
+feedback. Captioned master, standalone clips, effort comparison, NLE import
+verification, and final outcome evaluation remain pending.
+
 No outcome evaluation is recorded in this brief yet. For each trial append: date, communication goal, raw take and code commit, baseline, edit/workspace and reviewed output links, effort and corrections, observations, and a retain/revise/pause/retire decision with rationale. Preserve originals and selected workspaces according to the [asset guide](../CONTENT_ASSETS.md).
