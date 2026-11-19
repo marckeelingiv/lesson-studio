@@ -1,0 +1,67 @@
+{
+  "observed_on": "2026-11-18",
+  "platform": "linux",
+  "purpose": "Research pins for a separately implemented download-only command; not runtime API compatibility evidence.",
+  "assets": [
+    {
+      "repository": "storytold/filmcraft",
+      "tag": "v0.20.1",
+      "release_commit": "cedf0c9bd060eb06a977d532402be2097c9ebe42",
+      "arch": "x86_64",
+      "name": "filmcraft-0.20.1-linux-x86_64.tar.gz",
+      "url": "https://github.com/storytold/filmcraft/releases/download/v0.20.1/filmcraft-0.20.1-linux-x86_64.tar.gz",
+      "size": 112162847,
+      "sha256": "3e4fea3cb8d473e68f189a0a8792ba46160fab507adab3ab8920073fd41f24fa"
+    },
+    {
+      "repository": "storytold/filmcraft",
+      "tag": "v0.20.1",
+      "release_commit": "cedf0c9bd060eb06a977d532402be2097c9ebe42",
+      "arch": "aarch64",
+      "name": "filmcraft-0.20.1-linux-aarch64.tar.gz",
+      "url": "https://github.com/storytold/filmcraft/releases/download/v0.20.1/filmcraft-0.20.1-linux-aarch64.tar.gz",
+      "size": 108309163,
+      "sha256": "cdce3d832620c7cf7150e6609fd98ad9702e7d4c57f827aab562e87d816ea13f"
+    },
+    {
+      "repository": "storytold/effectcraft",
+      "tag": "v0.24.1",
+      "release_commit": "582344dd4ef462362c02e56e3094de7af01847ab",
+      "arch": "x86_64",
+      "name": "effectcraft-0.24.1-linux-x86_64.tar.gz",
+      "url": "https://github.com/storytold/effectcraft/releases/download/v0.24.1/effectcraft-0.24.1-linux-x86_64.tar.gz",
+      "size": 81826579,
+      "sha256": "5ce0393690144227fa9186e82308ad638a6ef6d9f976c996e6d03b5b51b65a7b"
+    },
+    {
+      "repository": "storytold/effectcraft",
+      "tag": "v0.24.1",
+      "release_commit": "582344dd4ef462362c02e56e3094de7af01847ab",
+      "arch": "aarch64",
+      "name": "effectcraft-0.24.1-linux-aarch64.tar.gz",
+      "url": "https://github.com/storytold/effectcraft/releases/download/v0.24.1/effectcraft-0.24.1-linux-aarch64.tar.gz",
+      "size": 76125337,
+      "sha256": "ad10c445065681760de9353117c6e2c45167eabcccf0ed19bde2f5c5ac908695"
+    },
+    {
+      "repository": "storytold/soundcraft",
+      "tag": "v0.20.1",
+      "release_commit": "a52bbdccbe15342f44e0de1906bf71a621e7a68f",
+      "arch": "x86_64",
+      "name": "soundcraft-0.20.1-linux-x86_64.tar.gz",
+      "url": "https://github.com/storytold/soundcraft/releases/download/v0.20.1/soundcraft-0.20.1-linux-x86_64.tar.gz",
+      "size": 21894484,
+      "sha256": "caefcf85c4f1138717d592d31ce5be07f2fca616ec36d63fac6760cdefbe28a9"
+    },
+    {
+      "repository": "storytold/soundcraft",
+      "tag": "v0.20.1",
+      "release_commit": "a52bbdccbe15342f44e0de1906bf71a621e7a68f",
+      "arch": "aarch64",
+      "name": "soundcraft-0.20.1-linux-aarch64.tar.gz",
+      "url": "https://github.com/storytold/soundcraft/releases/download/v0.20.1/soundcraft-0.20.1-linux-aarch64.tar.gz",
+      "size": 20185891,
+      "sha256": "93c6c6e5e37c0e57acea76201faacc777ed0f7b8fb8b86baaa71bb55cfd33dfd"
+    }
+  ]
+}

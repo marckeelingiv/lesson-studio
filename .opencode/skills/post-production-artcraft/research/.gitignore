@@ -1,0 +1,9 @@
+# Temporary third-party snapshots stay local; reports retain URLs, pins and hashes.
+/automation/upstream/
+/transcripts/upstream/
+/timeline/upstream/
+/optional-tools/effectcraft/
+/optional-tools/filmcraft/
+/optional-tools/soundcraft/
+/setup/api/
+/setup/sources/

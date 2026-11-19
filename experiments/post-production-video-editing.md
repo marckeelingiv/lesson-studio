@@ -44,3 +44,19 @@ feedback. Captioned master, standalone clips, effort comparison, NLE import
 verification, and final outcome evaluation remain pending.
 
 No outcome evaluation is recorded in this brief yet. For each trial append: date, communication goal, raw take and code commit, baseline, edit/workspace and reviewed output links, effort and corrections, observations, and a retain/revise/pause/retire decision with rationale. Preserve originals and selected workspaces according to the [asset guide](../CONTENT_ASSETS.md).
+
+### 2026-11-18 — separate ArtCraft-first workflow implementation decision
+
+Prepare an opt-in [ArtCraft-first skill](../.opencode/skills/post-production-artcraft/SKILL.md),
+with FilmCraft as the primary editor and EffectCraft/SoundCraft as optional
+treatments. Verify tool sources and actual capabilities before installation or
+use; do not infer supported operations from product names or workflow intent.
+This is a separate implementation trial, not a replacement for the default
+`@post-production` workflow or its pipeline backend, and does not revise the
+existing run or the preceding evaluation record.
+
+Installation, local runtime compatibility, media processing, and outcome
+evaluation remain unverified/pending. No successful local execution or reviewed
+output is claimed. Preserve originals, use the existing workspace conventions,
+and apply the same baseline comparison and human review before deciding whether
+to retain this alternative.

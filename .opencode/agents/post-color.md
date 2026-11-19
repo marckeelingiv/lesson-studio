@@ -5,7 +5,7 @@ mode: subagent
 
 # Color edit
 
-Read `.opencode/skills/post-production/references/handoff.md` and its sibling `tools.md`. Require approved timeline and visual plan.
+Read `.opencode/skills/post-production/references/handoff.md` and its sibling `tools.md`. Require approved timeline and visual plan. For `backend=artcraft` only, the timeline prerequisite may instead use a recorded explicit rough-cut deferral covering this revision and assigned work under the native handoff; retain the visual-plan prerequisite. Deferral authorizes only bounded editorial continuation, not human approval or release.
 
 1. Inspect exposure, white balance and camera matching, accounting for transfer functions/HDR/log metadata.
 2. Skip with evidence when screen-only/already adequate. Creative grading is optional.

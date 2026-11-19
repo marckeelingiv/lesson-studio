@@ -1,0 +1,59 @@
+{
+  "run_id": "artcraft-skill-build-2026-11-18",
+  "repository": "/home/marc/dev/lesson-studio",
+  "base_sha": "9e53d1b3b0acfc26ab7feeff93b4c6748a3f362c",
+  "goal": "Build an independently invokable ArtCraft-first post-production skill using downloaded upstream API evidence.",
+  "context_checkpoint": "Fresh bounded worker sessions; token counts unavailable.",
+  "authorized_operations": ["download upstream reference text", "write scoped research", "build skill documentation and tests after plan review"],
+  "excluded_operations": ["install applications during skill construction", "download binaries or models during skill construction", "modify recordings", "control existing production run", "publish"],
+  "tasks": [
+    {"id": "scout-automation", "session_id": "ses_e0df52937ffehEiXHRdsFUnoMR", "owner_path": "research/automation/", "phase": "complete", "receipt": "research/automation/report.md", "acceptance": "Pinned upstream automation references and source-backed recipe"},
+    {"id": "scout-transcripts", "session_id": "ses_e0df511dbffeDoI3kB0JNTkt27", "owner_path": "research/transcripts/", "phase": "complete", "receipt": "research/transcripts/report.md", "acceptance": "Pinned transcript commands, time units, destructive-edit safeguards"},
+    {"id": "scout-timeline", "session_id": "ses_e0df4fd9dffeX1ibMVCGar4wvr", "owner_path": "research/timeline/", "phase": "complete", "receipt": "research/timeline/report.md", "acceptance": "Pinned timeline, visual, audio, export contracts and smoke-test limits"},
+    {"id": "scout-optional", "session_id": "ses_e0df4ea08ffeGL5fIO30dHcI77", "owner_path": "research/optional-tools/", "phase": "complete", "receipt": "research/optional-tools/report.md", "acceptance": "Pinned optional-tool APIs and evidenced handoff limitations"},
+    {"id": "scout-integration", "session_id": "ses_e0df4d8b1ffeb2ixusWDSfz8vp", "owner_path": "research/integration/", "phase": "complete", "receipt": "research/integration/report.md", "acceptance": "Minimal nonconflicting specialist reuse proposal"},
+    {"id": "plan-core", "session_id": "ses_e0df48f54ffenlb9GYR2SXUor2", "phase": "complete", "acceptance": "Read-only structure and acceptance plan reviewed; build scopes approved"},
+    {"id": "build-edit-routing", "session_id": "ses_e0df31b7effewesjVx19zpyTZj", "owned_files": [".opencode/skills/post-production/references/handoff.md", ".opencode/agents/post-story.md", ".opencode/agents/post-pacing.md"], "phase": "complete", "acceptance": "Default pipeline preserved; ArtCraft proposals returned to single project writer"},
+    {"id": "build-prep-routing", "session_id": "ses_e0df2e558ffeGlqiCA14ld8lyc", "owned_files": [".opencode/agents/post-media.md", ".opencode/agents/post-transcript.md", ".opencode/agents/post-visual.md", ".opencode/skills/post-production/references/tools.md"], "phase": "complete", "acceptance": "Native routing avoids pipeline-only restrictions"},
+    {"id": "build-discovery", "session_id": "ses_e0df3043fffexU9eynbRLhreHA", "owned_files": ["video_pipeline/README.md", "experiments/post-production-video-editing.md"], "phase": "complete", "acceptance": "Separate discovery and decision record; outcomes pending"},
+    {"id": "build-tests", "session_id": "ses_e0df2cc75ffePri31V08hRbyKy", "owned_files": ["video_pipeline/tests/test_post_production_artcraft_skill.py"], "phase": "complete", "acceptance": "Static routes, links, research independence and safety contracts; final execution awaits permanent docs"},
+    {"id": "build-core", "session_id": "ses_e0df26a32ffettSWRoBfDC94G2", "owned_files": ["SKILL.md", "references/handoff.md"], "phase": "complete", "acceptance": "ArtCraft-first producer with shared specialists, capability gates and native editable delivery"},
+    {"id": "review-routing", "session_id": "ses_e0df1e4a4ffevQA3E8DunddnUG", "phase": "complete", "verdict": "No concrete defects in scoped tracked routing/discovery diff; core/API files excluded"},
+    {"id": "build-filmcraft-api", "session_id": "ses_e0df0fc62ffePN9lR9cgKVoiY6", "owned_files": ["references/filmcraft-api.md"], "phase": "complete", "acceptance": "Pinned automation, transcript and export operating reference"},
+    {"id": "build-optional-api", "session_id": "ses_e0df0d80fffeIWbgD4r4tknVSL", "owned_files": ["references/effectcraft-api.md", "references/soundcraft-api.md"], "phase": "complete", "acceptance": "Optional file handoffs and explicit unvalidated round-trip gates"},
+    {"id": "build-timeline-api", "session_id": "ses_e0df0487effeqvsswPcj1q4CdG", "owned_files": ["references/timeline-api.md"], "phase": "complete", "acceptance": "Pinned stream, timing, treatment and interchange contracts"},
+    {"id": "review-core", "session_id": "ses_e0df07a19ffe2370YQRQNc9Aef", "phase": "complete", "verdict": "Two P2 findings: deferral compatibility and production checkpoint reopen; assigned targeted fixes"},
+    {"id": "fix-core-review", "session_id": "ses_e0defa9c4ffecTEd7lLbnV8HUD", "phase": "complete", "acceptance": "ArtCraft-only bounded deferral and exact final project reopen evidence added"},
+    {"id": "review-api", "session_id": "ses_e0dee5032ffeKr6yWCRKlaaz6Y", "phase": "complete", "verdict": "No actionable incorrect/unsafe examples or undefined citations in automation and optional APIs; static review only"},
+    {"id": "review-final-timeline", "session_id": "ses_e0dedf642ffejtn21X57W5XpYR", "phase": "complete", "verdict": "Core fixes verified; two timeline API P2 findings corrected by coordinator against downloaded source"},
+    {"id": "verify-timeline-fixes", "session_id": "ses_e0dec7c13ffeUqO1zxOf7Wp46a", "phase": "complete", "verdict": "Both targeting corrections and matching tests verified against pinned source"},
+    {"id": "scout-setup", "session_id": "ses_e0debdf9fffeFU45S0S1Zq5yja", "owner_path": "research/setup/", "phase": "complete", "receipt": "research/setup/report.md", "acceptance": "Official pinned release tags, platform archives and checksum evidence; text downloads only"},
+    {"id": "plan-setup", "session_id": "ses_e0debb258ffeqIF01RDw6XnM0y", "phase": "complete", "acceptance": "Minimal pinned download-only command and mocked validation plan"},
+    {"id": "build-setup", "session_id": "ses_e0deacbdaffetM60ZBNssGyuZj", "owned_files": ["scripts/setup.py", "video_pipeline/tests/test_artcraft_setup.py"], "phase": "complete", "acceptance": "Download-only command; 13 mocked tests pass"},
+    {"id": "review-setup", "session_id": "ses_e0de8124cffem0VK0dkT9npnSP", "phase": "complete", "verdict": "Pins passed; two P2 safety findings assigned to follow-up"},
+    {"id": "fix-setup-review", "session_id": "ses_e0de6b799ffeNT9BzeVVELgu1b", "phase": "complete", "acceptance": "FD-bound publication, trusted destination and parent-enforced worker deadline with regressions"},
+    {"id": "verify-setup-fixes", "session_id": "ses_e0de36748ffev7mTULTPPKcpCw", "phase": "complete", "verdict": "Both safety fixes passed; no new code blocker; documented runtime/directory/timeout requirements"}
+  ],
+  "resources": {
+    "shared_project_writes": "Disjoint builder-owned source files; orchestrator owns research manifest and integration",
+    "media_and_runtime": "not acquired; existing production run remains untouched"
+  },
+  "validation": {
+    "pipeline_tests": "44 passed including 22 mocked downloader tests",
+    "planner_tests": "3 passed",
+    "git_diff_check": "passed",
+    "download_checksums": "112 manifest entries verified",
+    "runtime": "not performed; no Craft executables on PATH",
+    "release_pins": "All six match saved official API metadata and SHA256SUMS.txt",
+    "setup_preview": "FilmCraft x86_64 v0.20.1 preview passed; no archive downloaded",
+    "independent_review": "Skill, API and setup reviews complete; all identified P2 findings corrected and independently verified"
+  },
+  "follow_up_authorization": {
+    "commit": "User requested committing completed changes",
+    "production": "User requested new Herdr worktree/OpenCode session with GPT-6.1 Sol Fast running latest ArtCraft skill",
+    "portable_setup": "User explicitly approved downloading, checksum verification, safe extraction and execution of pinned official binaries inside the new worktree",
+    "excluded": ["system installers", "PATH or desktop configuration changes", "plugins", "cloud media transfer", "speech-model downloads", "publication"],
+    "review": "Intermediate rough-cut gate deferred for bounded editorial continuation; final human viewing/listening remains pending"
+  },
+  "publication": "not authorized"
+}

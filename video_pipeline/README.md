@@ -13,6 +13,17 @@ It reuses the CLI below; optional treatments and editor integrations are not
 automatically implemented by the pipeline. See its capability reference before
 using multitrack edits, vertical layouts, or external NLE handoffs.
 
+For the opt-in [ArtCraft-first workflow](../.opencode/skills/post-production-artcraft/SKILL.md),
+invoke `@post-production-artcraft`: FilmCraft is primary, with EffectCraft/SoundCraft optional.
+It requires source and capability verification before use; installation, local
+runtime, media processing, and outcome evaluation remain unverified/pending.
+The existing `@post-production` workflow and pipeline remain the default.
+
+For pinned, checksum-verified Craft software downloads, see the
+[ArtCraft setup command](../.opencode/skills/post-production-artcraft/references/setup.md).
+It previews by default; downloading, installation, models and runtime acceptance
+are separate steps.
+
 Follow these habits while filming so the automated cut and graphic steps work reliably:
 
 - **Use spoken retake markers or pause before restarting (`A1`).**

@@ -2,6 +2,8 @@
 
 Read `video_pipeline/README.md`, current command help and relevant source. Reuse tools instead of installing another framework from a research checklist.
 
+`backend=pipeline` is the default. The Existing pipeline restrictions below are pipeline-specific. For `backend=artcraft`, read the separately supplied native handoff/API references and verified capability evidence; missing support is a blocker, not an automatic pipeline fallback. Authorized `ffprobe` probing or FFmpeg measurement does not authorize switching editing, assembly or rendering backends. Analysis helpers and backend fallbacks require explicit approval.
+
 ## Existing pipeline
 
 - `ingest` probes/extracts analysis audio, not automatic sync, OBS remux or proxies. Inventory original streams first: speech may be on a non-default track. The current extraction uses FFmpeg automatic audio selection while assembly uses `[0:a]`; neither CLI exposes track selection. For multitrack inputs, create an explicitly mapped editing derivative containing the intended video and exactly one chosen speech/mix track. Bind both transcription and EDL assembly to that derivative, documenting its original-source identity/time mapping. Do not assume extraction and assembly select the same stream.

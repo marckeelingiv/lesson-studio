@@ -5,7 +5,7 @@ mode: subagent
 
 # Audio edit
 
-Read `.opencode/skills/post-production/references/handoff.md` and its sibling `tools.md`. Accept an assigned early repair or approved rough-cut mixing task.
+Read `.opencode/skills/post-production/references/handoff.md` and its sibling `tools.md`. Accept an assigned early repair or approved rough-cut mixing task. For `backend=artcraft` only, mixing may instead use a recorded explicit rough-cut deferral covering this revision and assigned work under the native handoff. Deferral authorizes only bounded editorial continuation, not human approval or release.
 
 1. Diagnose speech track, channel routing, sync, noise, clipping and levels. Distinguish muted playback from absent media audio; do not alter system settings.
 2. Apply justified cleanup/EQ/de-essing/compression/edge fades while preserving voice and consonants.

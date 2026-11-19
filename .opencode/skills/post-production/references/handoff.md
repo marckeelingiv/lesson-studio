@@ -2,13 +2,19 @@
 
 All specialists read this first. The producer supplies repository/run/input paths and an exact writable stage directory. Missing inputs or ownership conflicts are blockers.
 
+## Backend routing
+
+Default to `backend=pipeline` when no backend is dispatched; retain the existing schema and assembly workflow. Only an explicit `backend=artcraft` dispatch selects ArtCraft: read `.opencode/skills/post-production-artcraft/references/handoff.md` before work. A missing backend handoff is a blocker, not permission to fall back.
+
+For ArtCraft, specialists supply stage-local proposals and evidence; the producer owns executable project/timeline writes and preview generation under that backend handoff. Pipeline schema/assembly instructions apply only to `backend=pipeline`. Report proposed changes separately from actually applied changes and verified previews; proposal-stage completion does not establish an applied edit or satisfy a review gate.
+
 ## Ownership
 
 - Preserve sources, previous revisions and other stages' artifacts. Write only in the assigned new stage directory. Request producer integration for tracked-source changes.
 - Read repository and `video_pipeline/AGENTS.md`. Python runs only through `uv run --project video_pipeline python ...` from the repository root.
 - Reuse installed tools. Ask before dependency installation, external uploads, paid processing, credential configuration or editor/system changes.
 - Work once and report back; only the producer dispatches fresh follow-up agents.
-- Read `video_pipeline/src/schema.py` and relevant implementation before emitting executable EDLs/manifests. Unsupported operations need an explicit alternative or blocker.
+- For `backend=pipeline`, read `video_pipeline/src/schema.py` and relevant implementation before emitting executable EDLs/manifests. For ArtCraft, hand proposals to the producer under its backend contract rather than inventing pipeline schema fields or assembling a pipeline cut. Unsupported operations need an explicit alternative or blocker.
 
 ## Required report
 
