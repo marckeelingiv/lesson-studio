@@ -11,6 +11,7 @@ Make engineering judgment visible to engineers, hiring managers, and career cont
 | Lesson | What viewers should assess |
 | --- | --- |
 | [From event to answer](event-to-answer/brief.md) — scripted; evidence verification pending | End-to-end delivery and clear communication |
+| [Purchase evidence, before the answer](purchase-evidence/brief.md) — interactive frontend; live/browser verification pending | Business question → inspectable saved evidence → explicit limits; Lightdash setup gate |
 | Why DuckDB; when to choose something else | Technical judgment and cost awareness |
 | Malformed or duplicate data | Reliability and correctness, using observed behavior |
 | Defined metrics through MCP | Practical AI integration and its boundaries |

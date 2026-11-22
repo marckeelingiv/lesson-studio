@@ -8,7 +8,7 @@ const root = fileURLToPath(new URL('.', import.meta.url));
 const lessonsRoot = fileURLToPath(new URL('../lessons/', import.meta.url));
 const port = Number(process.argv[2] || 4173);
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw Error('Use a port between 1 and 65535.');
-const types = {'.html':'text/html', '.css':'text/css', '.js':'text/javascript', '.json':'application/json'};
+const types = {'.html':'text/html', '.css':'text/css', '.js':'text/javascript', '.mjs':'text/javascript', '.json':'application/json'};
 const server = createServer(async (request, response) => {
   try {
     if (request.method !== 'GET' && request.method !== 'HEAD') { response.writeHead(405); response.end(); return; }

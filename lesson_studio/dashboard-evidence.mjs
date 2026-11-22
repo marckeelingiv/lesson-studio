@@ -1,0 +1,306 @@
+import {layer, branchGraph, columnMetadata, safeLink, errorMessage} from './dashboard-core.mjs';
+
+// All companion/lesson text is assigned through textContent, including SQL,
+// table cells, SVG labels, metadata and errors. No payload HTML is interpreted.
+function el(tag, text, cls) {
+  const node = document.createElement(tag);
+  if (text !== undefined) node.textContent = String(text);
+  if (cls) node.className = cls;
+  return node;
+}
+function button(text, click, current = false) {
+  const node = el('button', text);
+  node.type = 'button'; node.onclick = click;
+  node.setAttribute('aria-pressed', String(current));
+  return node;
+}
+function panel(title) {
+  const node = el('section', undefined, 'panel');
+  node.append(el('h2', title)); return node;
+}
+function link(text, url) {
+  const node = el('a', text);
+  const safe = safeLink(url);
+  if (safe) { node.href = safe; node.target = '_blank'; node.rel = 'noopener noreferrer'; }
+  return node;
+}
+function json(value) { return JSON.stringify(value, null, 2); }
+
+// The evidence module owns content only; slots, layout and camera belong to the
+// caller. Reconcile native elements so stable controls keep focus and scrolling.
+function reconcile(root, next) {
+  const top = root.scrollTop, left = root.scrollLeft;
+  const old = [...root.children], children = [...next.children];
+  children.forEach((child, index) => {
+    const current = old[index];
+    if (!current || current.tagName !== child.tagName ||
+        current.dataset.focus !== child.dataset.focus) {
+      root.insertBefore(child, current || null);
+      if (current) root.removeChild(current);
+      return;
+    }
+    const childTop = current.scrollTop, childLeft = current.scrollLeft;
+    for (const attr of [...current.attributes]) if (!child.hasAttribute(attr.name)) current.removeAttribute(attr.name);
+    for (const attr of [...child.attributes]) current.setAttribute(attr.name, attr.value);
+    for (const name of ['onclick', 'onkeydown', 'onchange', 'onmouseenter', 'onmouseleave', 'onfocus', 'onblur']) current[name] = child[name];
+    const selectedValue = child.value;
+    if (!child.children.length) {
+      if (current.textContent !== child.textContent) current.textContent = child.textContent;
+    } else reconcile(current, child);
+    if (child.tagName.toLowerCase() === 'select') current.value = selectedValue;
+    current.scrollTop = childTop; current.scrollLeft = childLeft;
+  });
+  for (const child of old.slice(children.length)) root.removeChild(child);
+  root.scrollTop = top; root.scrollLeft = left;
+}
+
+export function mountEvidence(slots, dispatch) {
+  const act = (type, value) => dispatch({type, value});
+  const hover = {column:null};
+  let lastContent, lastSelected;
+  return state => {
+    const content = JSON.stringify([state.graph, state.branch, state.selected, state.model, state.observations,
+      state.sqlTab, state.pinnedColumn, state.provenance, state.services]);
+    if (content === lastContent) return;
+    lastContent = content;
+    if (lastSelected !== state.selected) hover.column = null;
+    const next = Object.fromEntries(Object.keys(slots).map(id => [id, el('div')]));
+    renderGraph(next.lineage, state, act);
+    renderDetail(next.table, state, act, next, slots.governance, hover);
+    if (!next.sql.children.length) next.sql.append(el('p', 'Select a queryable manifest model to inspect its actual SQL. No substitute transformation.', 'empty'));
+    if (!next.governance.children.length) next.governance.append(el('p', 'Select a queryable manifest model, then hover or focus a column to inspect its documented contract. No inferred metadata.', 'empty'));
+    renderProvenance(next.provenance, state, true);
+    renderAnswer(next.tools, state);
+    renderServices(next.tools, state);
+    next.tools.append(el('p', 'Open ≠ Start. TCP availability is not authenticated readiness. Dagster can perform real work.', 'warning'));
+    for (const id of Object.keys(next)) {
+      if (lastSelected !== state.selected && ['table', 'sql', 'governance'].includes(id)) slots[id].replaceChildren();
+      reconcile(slots[id], next[id]);
+    }
+    lastSelected = state.selected;
+  };
+}
+
+function renderGraph(root, state, act) {
+  const section = panel('Declared lineage / observed counts');
+  const head = el('div', undefined, 'panel-head');
+  const label = el('label', 'Spotlight ');
+  const select = el('select'); select.setAttribute('aria-label', 'Lineage branch');
+  for (const node of [{id:'all', name:'Full graph'}, ...state.graph.nodes.filter(node => layer(node) === 3)]) {
+    const option = el('option', node.name); option.value = node.id; select.append(option);
+  }
+  select.value = state.branch; select.onchange = event => act('branch', event.target.value); select.dataset.focus = 'branch';
+  label.append(select); head.append(label, el('small', 'SOURCE → BASE → STAGING → MART · static lineage, not execution'));
+  section.append(head);
+  const graph = branchGraph(state.graph, state.branch);
+  if (!graph.nodes.length) { section.append(el('p', 'Manifest unavailable. Connect the companion to inspect actual lineage.', 'empty')); root.append(section); return; }
+  const positions = new Map(), columns = [0, 1, 2, 3].map(index => graph.nodes.filter(node => layer(node) === index));
+  const height = Math.max(...columns.map(nodes => nodes.length), 1) * 96 + 55;
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', `0 0 1080 ${height}`); svg.classList.add('lineage');
+  svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', 'Manifest lineage. Nodes select tables; edges select downstream SQL.');
+  const shape = (tag, attrs, text) => {
+    const node = document.createElementNS(ns, tag);
+    for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+  const defs = shape('defs', {}), marker = shape('marker', {
+    id:'lineage-arrow', viewBox:'0 0 10 10', refX:9, refY:5,
+    markerWidth:6, markerHeight:6, orient:'auto-start-reverse',
+  });
+  marker.append(shape('path', {d:'M 0 0 L 10 5 L 0 10 z', fill:'#79e4bc'}));
+  defs.append(marker); svg.append(defs);
+  columns.forEach((nodes, x) => {
+    svg.append(shape('text', {x:x * 270 + 12, y:22, class:'layer'}, ['SOURCE', 'BASE', 'STAGING', 'MART'][x]));
+    nodes.forEach((node, y) => positions.set(node.id, {x:x * 270 + 8, y:y * 96 + 45}));
+  });
+  for (const edge of graph.edges) {
+    const from = positions.get(edge.source), to = positions.get(edge.target);
+    if (!from || !to) continue;
+    const x1 = from.x + 230, y1 = from.y + 30, x2 = to.x, y2 = to.y + 30;
+    const d = from.x === to.x ?
+      `M${x1},${y1} C${x1 + 32},${y1} ${x1 + 32},${y2} ${x1},${y2}` :
+      `M${x1},${y1} C${x1 + 35},${y1} ${x2 - 35},${y2} ${x2},${y2}`;
+    const group = shape('g', {class:'edge', tabindex:0, role:'button', 'aria-label':`Inspect downstream SQL: ${edge.source} to ${edge.target}`});
+    const choose = () => act('inspect', {model:edge.target, card:'sql'});
+    group.onclick = choose; group.onkeydown = event => { if (['Enter', ' '].includes(event.key)) { event.preventDefault(); choose(); } };
+    group.append(shape('path', {d, class:'wire', 'marker-end':'url(#lineage-arrow)'}), shape('path', {d, class:'wire-hit'})); svg.append(group);
+  }
+  for (const node of graph.nodes) {
+    const {x, y} = positions.get(node.id), observation = state.observations[node.id];
+    const group = shape('g', {class:`node ${node.id === state.selected ? 'selected' : ''}`, tabindex:0, role:'button', 'aria-label':`Inspect ${node.name}`, 'data-focus':node.id});
+    group.onclick = () => act('inspect', {model:node.id, card:'table'});
+    group.onkeydown = event => { if (['Enter', ' '].includes(event.key)) { event.preventDefault(); group.onclick(); } };
+    const count = !node.queryable ? 'Lineage only · not queried' : observation?.error ? 'Observation unavailable' :
+      observation?.row_count !== undefined ? `${observation.row_count.toLocaleString()} rows · observed` : 'Not observed';
+    group.append(shape('rect', {x,y,width:230,height:64,rx:8}),
+      shape('text', {x:x+10,y:y+24}, node.name), shape('text', {x:x+10,y:y+47,class:'count'}, count));
+    const title = shape('title', {}, node.id); group.append(title); svg.append(group);
+  }
+  const scroll = el('div', undefined, 'graph-wrap'); scroll.append(svg); section.append(scroll,
+    el('small', 'Counts may be from separate requests; they are not an atomic cross-table snapshot. Refresh is controlled privately. Sources are never queried.'));
+  root.append(section);
+}
+
+function renderDetail(root, state, act, slots, liveGovernance, hover) {
+  const node = state.graph.nodes.find(node => node.id === state.selected);
+  const model = state.model?.id === state.selected ? state.model : null;
+  const observation = state.observations[state.selected];
+  const section = panel(node ? node.name : 'Choose an evidence node');
+  if (!node) { section.append(el('p', 'No manifest model selected.', 'empty')); root.append(section); return; }
+  if (!node.queryable) {
+    section.append(el('p', 'Source node: lineage only. Raw external source tables are not queried. Select a downstream model or a wire to inspect its SQL.', 'warning'));
+    root.append(section); return;
+  }
+  section.append(el('p', `${node.id} · relation ${node.schema}.${node.identifier}`, 'provenance'));
+  if (!model) section.append(el('p', 'Model metadata / SQL unavailable or being observed. No inferred documentation.', 'warning'));
+  if (model) section.append(el('p', model.description || 'Model description: not documented'));
+  const grid = el('div', undefined, 'grid');
+  const tablePanel = el('div');
+  if (observation?.error) tablePanel.append(el('p', errorMessage(observation.error), 'warning'));
+  else if (!observation) tablePanel.append(el('p', 'No completed observation for this model.', 'empty'));
+  else {
+    tablePanel.append(el('div', `${observation.row_count.toLocaleString()} rows`, 'count-number'),
+      el('p', `Completed observation: ${observation.observed_at} · ${observation.snapshot_label}`, 'provenance'),
+      el('p', `Preview: ${observation.rows.length} of ${observation.row_count} rows · maximum ${observation.row_limit} · order ${observation.order}. No sorting or pagination.`, 'muted'));
+    const scroll = el('div', undefined, 'table-scroll'); scroll.tabIndex = 0; scroll.setAttribute('aria-label', 'Scrollable bounded table preview');
+    const table = el('table'), head = el('thead'), row = el('tr'), body = el('tbody');
+    for (const column of observation.columns) {
+      const th = el('th'); th.scope = 'col';
+      const control = button(`${column.name} ⓘ`, () => act('column', state.pinnedColumn === column.name ? null : column.name), state.pinnedColumn === column.name);
+      control.dataset.focus = `column:${column.name}`;
+      control.setAttribute('aria-describedby', 'column-governance');
+      control.onmouseenter = control.onfocus = () => { if (!state.pinnedColumn) showColumn(column); };
+      control.onmouseleave = control.onblur = () => { if (!state.pinnedColumn) showColumn(null); };
+      th.append(control); row.append(th);
+    }
+    head.append(row);
+    for (const values of observation.rows) {
+      const tr = el('tr');
+      for (const value of values) tr.append(el('td', value === null ? 'NULL' : typeof value === 'object' ? json(value) : value));
+      body.append(tr);
+    }
+    table.append(head, body); scroll.append(table); tablePanel.append(scroll);
+    const comparison = observation.schema_comparison;
+    if (comparison) {
+      tablePanel.append(el('p', `Schema check — documented columns missing: ${comparison.documented_columns_missing.join(', ') || 'none detected'}; undocumented snapshot columns: ${comparison.undocumented_snapshot_columns.join(', ') || 'none detected'}; SQL freshness references absent in snapshot: ${comparison.freshness_sql_references_missing.join(', ') || 'none detected'}.`, 'warning'),
+        el('small', `Scope: ${comparison.scope}. This is not freshness measurement or full SQL validation.`));
+    }
+  }
+  let governance = el('aside', undefined, 'governance'); governance.id = 'column-governance';
+  if (model && !observation?.columns?.length) {
+    const declarations = el('div', undefined, 'sql-tabs');
+    tablePanel.append(el('h3', 'Documented columns / no observed schema'));
+    for (const column of model.columns) {
+      const choose = button(`${column.name} ⓘ`, () => act('column', state.pinnedColumn === column.name ? null : column.name), state.pinnedColumn === column.name);
+      choose.dataset.focus = `column:${column.name}`;
+      choose.setAttribute('aria-describedby', 'column-governance');
+      choose.onmouseenter = choose.onfocus = () => { if (!state.pinnedColumn) showColumn({name:column.name, type:'unavailable'}); };
+      choose.onmouseleave = choose.onblur = () => { if (!state.pinnedColumn) showColumn(null); };
+      declarations.append(choose);
+    }
+    tablePanel.append(declarations);
+  }
+  function showColumn(column, initial = false) {
+    if (!initial) {
+      hover.column = column?.name || null;
+      const previous = governance;
+      governance = el('aside', undefined, 'governance'); governance.id = 'column-governance';
+      showColumn(column, true);
+      const next = el('div'); next.append(governance);
+      reconcile(liveGovernance, next);
+      governance = previous;
+      return;
+    }
+    governance.replaceChildren(el('h3', 'Column contract / parsed dbt YAML'));
+    governance.append(el('p', 'Hover or focus a column header. Click to pin; click again to release. Test declarations below are not test results.', 'muted'));
+    if (!column) { governance.append(el('p', 'No column selected. Undocumented fields are never inferred.', 'empty')); return; }
+    const meta = columnMetadata(model, column), dl = el('dl');
+    for (const [label, value] of [['Column', meta.name], ['Observed type', meta.type], ['Declared type', meta.data_type],
+      ['Description', meta.description], ['Owner', meta.owner], ['Classification', meta.classification]]) {
+      dl.append(el('dt', label), el('dd', value));
+    }
+    governance.append(dl, el('h3', 'Additional documented metadata'), el('pre', Object.keys(meta.meta).length ? json(meta.meta) : 'not documented'),
+      el('h3', 'Declared column tests (not results)'), el('pre', meta.tests.length ? json(meta.tests) : 'not documented'));
+    if (model?.metadata_provenance) governance.append(el('p', `Metadata: ${model.metadata_provenance.kind}; ${model.metadata_provenance.patch_path || 'patch path not documented'}; manifest ${model.metadata_provenance.manifest_sha256}. ${model.metadata_provenance.note}`, 'provenance'));
+  }
+  const columnName = state.pinnedColumn || hover.column;
+  showColumn(observation?.columns?.find(column => column.name === columnName) ||
+    (model?.columns.find(column => column.name === columnName) ? {name:columnName, type:'unavailable'} : null), true);
+  if (slots) { section.append(tablePanel); slots.governance.append(governance); }
+  else { grid.append(tablePanel, governance); section.append(grid); }
+  if (model) {
+    const sql = panel('Transformation / inspect, never execute');
+    const tabs = el('div', undefined, 'sql-tabs');
+    for (const [value, name] of [['source','Current source SQL'], ['compiled','Compiled manifest SQL'], ['raw','Raw manifest SQL']]) {
+      const tab = button(name, () => act('sqlTab', value), state.sqlTab === value);
+      tab.dataset.focus = `sql:${value}`; tabs.append(tab);
+    }
+    const source = state.sqlTab === 'source';
+    sql.append(tabs, el('p', source ?
+      `Current worktree source · ${model.source_sql.status} · ${model.source_sql.path || 'path unavailable'} · observed ${model.source_sql.observed_at || 'unavailable'} · SHA-256 ${model.source_sql.sha256 || 'unavailable'}` :
+      `Loaded manifest SQL · SHA-256 ${model.manifest_sql.manifest_sha256}`, 'provenance'),
+    el('p', 'Current SQL and loaded manifest SQL may differ. Neither proves which code built this saved database. Snapshot build provenance: unknown.', 'warning'),
+    el('pre', (source ? model.source_sql.text : model.manifest_sql[state.sqlTab]) ?? 'SQL unavailable — no substitute text.'),
+    el('p', `Model owner: ${model.owner} · classification: ${model.classification}`, 'provenance'),
+    el('h3', 'All model test declarations (not execution results)'), el('pre', model.tests.length ? json(model.tests) : 'not documented'));
+    (slots?.sql || section).append(sql);
+  }
+  root.append(section);
+}
+
+function renderAnswer(root, state) {
+  const lightdash = state.services.lightdash;
+  const section = panel('Business insight / Lightdash handoff');
+  section.append(el('p', 'Proposed analysis: compare purchase patterns at the verified mart grain. Confirm available dimensions, aggregation, units, time boundaries, and snapshot scope before naming a measure or claiming a trend.'));
+  if (safeLink(lightdash?.dashboard_url)) {
+    section.append(link('Open configured Lightdash dashboard ↗', lightdash.dashboard_url),
+      el('p', 'Configured destination, not a verified result. TCP reachability does not verify login, project existence, dashboard content, or warehouse connectivity.', 'warning'));
+  } else {
+    section.append(el('h3', 'Prerequisite: connect a real business dashboard'),
+      el('p', 'No configured dashboard is available. No chart or metric result is substituted.', 'warning'),
+      el('p', `Missing: ${lightdash?.missing_prerequisites?.join(', ') || 'companion availability and a verified Lightdash project/dashboard'}.`),
+      el('p', 'Operator handoff: follow the subject evidence-dashboard prerequisite guide; verify the existing Lightdash project and warehouse connection, then configure EVIDENCE_LIGHTDASH_URL, EVIDENCE_LIGHTDASH_PROJECT, and EVIDENCE_LIGHTDASH_DASHBOARD in the companion environment. Never place credentials in lesson content or links.'));
+  }
+  root.append(section);
+}
+
+function renderProvenance(root, state, expanded) {
+  const section = panel(expanded ? 'What this evidence can—and cannot—establish' : 'Evidence provenance / always visible');
+  const p = state.provenance;
+  section.append(el('p', p ?
+    'Saved-snapshot observation mode. Build provenance is unknown; current SQL and manifest do not prove which code built the saved database.' :
+    'Companion evidence unavailable. No fallback dataset, sample counts, or simulated results are shown.', 'warning'));
+  if (p) section.append(el('p', `${p.label} · mode ${p.mode} · snapshot ${p.snapshot_exists ? 'exists' : 'missing'} · snapshot file modified ${p.snapshot_modified_at || 'unknown'} (not a build timestamp)`, 'provenance'),
+    el('p', `Snapshot build provenance: ${p.snapshot_build_provenance}. Built from loaded manifest: ${p.snapshot_built_from_manifest}. Manifest generated: ${p.manifest_generated_at || 'unknown'}; loaded: ${p.manifest_loaded_at}; SHA-256 ${p.manifest_sha256}.`, 'provenance'));
+  section.append(el('p', 'Current source SQL, session-loaded manifest / parsed YAML, and the saved read-only database are different evidence surfaces. They are not guaranteed to be the same build. Observation time is response time, not data generation time. Docs can describe a separate artifact set.', 'warning'));
+  if (expanded) {
+    const list = el('ul');
+    for (const text of ['No production impact, real customer data, end-to-end event tracing, or pipeline freshness is demonstrated.',
+      'Counts are relation observations, not throughput. Counts are exact for each completed relation observation; up to 50 unordered rows are shown. Separate requests need not be mutually consistent.',
+      'Manifest dependencies and test declarations are not successful execution or test results.',
+      'Schema checks cover documented columns and literal generated_at/latest_timestamp references, not full SQL or type validation.',
+      'Service availability is a TCP probe, not authenticated identity or application readiness. Dagster can perform real work against a separate runtime database.']) list.append(el('li', text));
+    section.append(list);
+  }
+  root.append(section);
+}
+
+function renderServices(root, state) {
+  const grid = el('section', undefined, 'services'); grid.setAttribute('aria-label', 'External evidence surfaces');
+  for (const name of ['dagster', 'docs', 'lightdash']) {
+    const service = state.services[name], section = panel(name === 'docs' ? 'dbt Docs' : name === 'dagster' ? 'Dagster' : 'Lightdash');
+    section.append(el('p', !service ? 'Unavailable / companion offline' : service.reachable ? 'Available TCP port · application not authenticated' :
+      service.state === 'exited' ? 'Failed / owned process exited' : service.missing_prerequisites?.length ? 'Missing prerequisites / artifacts' :
+      service.state === 'running' ? 'Starting / port not reachable' : 'Unavailable / not started', service?.reachable ? 'muted' : 'unavailable'));
+    const url = name === 'lightdash' ? service?.dashboard_url : service?.url;
+    if (safeLink(url)) section.append(link(`Open ${name === 'lightdash' ? 'configured dashboard' : name} ↗`, url));
+    if (service?.missing_prerequisites?.length) section.append(el('p', `Missing: ${service.missing_prerequisites.join(', ')}`));
+    if (name === 'dagster') section.append(el('p', 'Real control UI. Its separate runtime database is NOT this evidence snapshot. Builds require the normal MinIO/data prerequisites.', 'warning'));
+    if (name === 'docs') section.append(el('p', 'Existing docs artifacts only. They may differ from this session’s evidence manifest.', 'muted'));
+    if (name === 'lightdash') section.append(el('p', 'External service; no automatic start or setup. Login, project, dashboard, and warehouse connection remain unverified.', 'muted'));
+    grid.append(section);
+  }
+  root.append(grid);
+}
