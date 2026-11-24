@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-theme="dark"
+  data-composition-variables='[
+    {"id":"theme","type":"enum","label":"Theme","default":"dark","options":[{"value":"dark","label":"Dark"},{"value":"light","label":"Light"}]},
+    {"id":"kicker","type":"string","label":"Kicker","default":"LINEAR PIPELINE"},
+    {"id":"title","type":"string","label":"Title","default":"Four Sequential Stages to Picture Lock"},
+    {"id":"items","type":"string","label":"Steps","default":"Ingest:Probe media & transcribe words|Sift:Cut silences & guard tails|Storyboard:Map layouts & Contact Sheet|Verify:Run 8 automated QC checks"},
+    {"id":"activeStep","type":"number","label":"Active Step","default":2}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+    <title>Framework — Linear Steps</title>
+    <link rel="stylesheet" href="../tokens/engineering-editorial/tokens.css" />
+    <link rel="stylesheet" href="../motion/transitions.css" />
+    <link rel="stylesheet" href="./frameworks.css" />
+    <script src="../../../video_pipeline/hyperframes/node_modules/gsap/dist/gsap.min.js"></script>
+    <script src="../motion/mechanics.js"></script>
+  </head>
+  <body>
+    <div id="root" data-composition-id="framework-linear-steps" data-width="1920" data-height="1080" data-duration="5">
+      <div class="hf-stage">
+        <div class="hf-safe-frame">
+          <div id="fw-linear-shell" class="hf-fw-shell">
+            <div class="hf-fw-header">
+              <div class="hf-kicker">
+                <span class="hf-kicker-rule" data-layout-ignore></span>
+                <span id="fw-linear-kicker">LINEAR PIPELINE</span>
+              </div>
+              <h1 id="fw-linear-title" class="hf-title">Four Sequential Stages to Picture Lock</h1>
+            </div>
+            <div class="hf-fw-stage">
+              <div id="fw-linear-track" class="hf-fw-linear-track"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var vars = window.LessonMotion.getVariables();
+        window.LessonMotion.applyTheme(vars.theme);
+        document.getElementById("fw-linear-kicker").textContent = vars.kicker || "";
+        document.getElementById("fw-linear-title").textContent = vars.title || "";
+
+        var pairs = window.LessonMotion.parsePairs(vars.items, []);
+        var activeIdx = typeof vars.activeStep === "number" ? vars.activeStep : Number(vars.activeStep);
+        var track = document.getElementById("fw-linear-track");
+        track.innerHTML = "";
+
+        pairs.forEach(function (pair, idx) {
+          var wrap = document.createElement("div");
+          wrap.className = "hf-fw-step-wrap";
+
+          var card = document.createElement("div");
+          card.className = "hf-fw-step-card" + (idx === activeIdx ? " is-active" : "");
+
+          var num = document.createElement("div");
+          num.className = "hf-fw-step-num";
+          num.textContent = "0" + (idx + 1);
+          var title = document.createElement("div");
+          title.className = "hf-fw-step-title";
+          title.textContent = pair.label;
+          card.appendChild(num);
+          card.appendChild(title);
+
+          if (pair.detail) {
+            var detail = document.createElement("div");
+            detail.className = "hf-fw-step-detail";
+            detail.textContent = pair.detail;
+            card.appendChild(detail);
+          }
+
+          wrap.appendChild(card);
+
+          if (idx < pairs.length - 1) {
+            var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("class", "hf-fw-arrow");
+            svg.setAttribute("viewBox", "0 0 40 40");
+            svg.setAttribute("fill", "none");
+            var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("class", "hf-fw-arrow-path");
+            path.setAttribute("d", "M6 20 H32 M23 11 L32 20 L23 29");
+            path.setAttribute("stroke", "currentColor");
+            path.setAttribute("stroke-width", "3.5");
+            path.setAttribute("stroke-linecap", "round");
+            path.setAttribute("stroke-linejoin", "round");
+            svg.appendChild(path);
+            wrap.appendChild(svg);
+          }
+          track.appendChild(wrap);
+        });
+
+        var tl = window.LessonMotion.createTimeline("framework-linear-steps");
+        window.LessonMotion.textEntrances(tl, "#fw-linear-title", { at: 0, keepFrameZeroVisible: true });
+        window.LessonMotion.cards(tl, "#fw-linear-track .hf-fw-step-card", { at: 0.06, stagger: 0.1 });
+        window.LessonMotion.circlesAndMarks(tl, "#fw-linear-track .hf-fw-arrow-path", { at: 0.2, stagger: 0.1 });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["framework-linear-steps"] = tl;
+      })();
+    </script>
+  </body>
+</html>

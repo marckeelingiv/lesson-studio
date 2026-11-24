@@ -4,6 +4,8 @@ __pycache__/
 *.pyc
 video_pipeline/workspace/
 video_pipeline/renderer/public/
+video_pipeline/hyperframes/.cache/
+video_pipeline/hyperframes/out/
 *.mp4
 *.webm
 *.mkv

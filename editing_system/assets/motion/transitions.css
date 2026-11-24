@@ -1,0 +1,187 @@
+/* HyperFrames Starter Asset Pack v0.1 — Transitions & Shared Stage Rules
+ * Consumes tokens.css exclusively (zero hardcoded colors, zero CSS transition clocks, zero neon glows).
+ * Visual changes across frames are driven deterministically by GSAP timelines in mechanics.js.
+ */
+
+:root {
+  /* Drop unbundled SFMono-Regular fallback from tokens.css so HyperFrames font lint resolves cleanly */
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.hf-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.hf-stage--transparent {
+  background-color: transparent;
+}
+
+/* 16:9 Safe Zone container (>=5% horizontal and vertical margins + bottom caption clearance) */
+.hf-safe-frame {
+  position: absolute;
+  inset: 0;
+  padding: var(--safe-margin-y) var(--safe-margin-x) calc(var(--caption-bottom-band) + 118px) var(--safe-margin-x);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Approved Transition Family States (subtle, swipe, zoom) */
+.hf-transition-layer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+}
+
+.hf-transition-subtle {
+  transform-origin: center center;
+}
+
+.hf-transition-swipe {
+  transform-origin: left center;
+  overflow: hidden;
+}
+
+.hf-transition-zoom {
+  transform-origin: center center;
+}
+
+.hf-swipe-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 6px;
+  background-color: var(--accent-primary);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Fixed Caption Anchor Invariant — never moves across frames */
+.hf-caption-anchor {
+  position: absolute;
+  left: var(--safe-margin-x);
+  right: var(--safe-margin-x);
+  bottom: var(--caption-bottom-band);
+  height: 84px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.hf-caption-group {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.hf-caption-pill {
+  max-width: 1400px;
+  padding: 14px 28px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-caption);
+  border: var(--border-width) solid var(--border-strong);
+  font-family: var(--font-sans);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .hf-caption-pill {
+  color: var(--bg-surface);
+}
+
+.hf-caption-word {
+  display: inline;
+}
+
+/* Editorial typography & surface helpers (all readable copy >= 28px for 1080p floor) */
+.hf-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.hf-kicker-rule {
+  display: inline-block;
+  width: 28px;
+  height: 4px;
+  border-radius: 2px;
+  background-color: var(--accent-primary);
+}
+
+.hf-title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+
+.hf-subtitle {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1.38;
+  color: var(--text-secondary);
+}
+
+.hf-card {
+  background-color: var(--bg-surface);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.hf-card--elevated {
+  background-color: var(--bg-surface-elevated);
+  border-color: var(--border-strong);
+}
+
+.hf-card--accent-left {
+  border-left: var(--accent-bar-width) solid var(--accent-primary);
+}

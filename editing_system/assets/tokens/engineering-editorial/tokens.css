@@ -1,0 +1,70 @@
+/* Engineering Editorial Design Tokens (Starter Asset Pack v0.1)
+ * Supports global single-pass reskin across Scene Layouts, Frameworks, Heroes, and Motion Plates.
+ * Anti-slop: crisp borders, high-contrast surfaces, zero neon glow blobs.
+ */
+
+:root {
+  /* Typography */
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* 16:9 Canvas & Safe Zones (1920x1080 base) */
+  --canvas-width: 1920px;
+  --canvas-height: 1080px;
+  --safe-margin-x: 96px;       /* 5% horizontal title-safe margin */
+  --safe-margin-y: 54px;       /* 5% vertical title-safe margin */
+  --caption-bottom-band: 72px; /* Fixed caption anchor baseline */
+
+  /* Spacing & Radii */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-6: 48px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --border-width: 1px;
+  --accent-bar-width: 4px;
+}
+
+:root,
+[data-theme="dark"] {
+  --bg-canvas: #0b1014;
+  --bg-surface: #121920;
+  --bg-surface-elevated: #18222c;
+  --bg-caption: rgba(11, 16, 20, 0.86);
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --border-subtle: #24313e;
+  --border-strong: #384a5c;
+
+  --accent-primary: #38bdf8;
+  --accent-secondary: #a3e635;
+  --accent-warning: #f59e0b;
+  --accent-danger: #f43f5e;
+  --caption-active: #facc15;
+}
+
+[data-theme="light"] {
+  --bg-canvas: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  --bg-caption: rgba(15, 23, 42, 0.9);
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  --border-subtle: #cbd5e1;
+  --border-strong: #94a3b8;
+
+  --accent-primary: #0284c7;
+  --accent-secondary: #4d7c0f;
+  --accent-warning: #d97706;
+  --accent-danger: #e11d48;
+  --caption-active: #facc15;
+}

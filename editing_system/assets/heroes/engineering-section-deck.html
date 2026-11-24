@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-theme="dark"
+  data-composition-variables='[
+    {"id":"theme","type":"enum","label":"Theme","default":"dark","options":[{"value":"dark","label":"Dark"},{"value":"light","label":"Light"}]},
+    {"id":"kicker","type":"string","label":"Kicker","default":"HERO CHAPTER DECK"},
+    {"id":"title","type":"string","label":"Title","default":"System Architecture Walkthrough"},
+    {"id":"activeIndex","type":"number","label":"Active Chapter Index","default":1},
+    {"id":"chapters","type":"string","label":"Chapters JSON","default":"[{\"num\":\"01\",\"title\":\"Signal Ingest\",\"summary\":\"Probe VFR status and build word timestamps.\"},{\"num\":\"02\",\"title\":\"Scientific Sift\",\"summary\":\"Trim dead air while guarding consonant tails.\"},{\"num\":\"03\",\"title\":\"Scene Storyboard\",\"summary\":\"Map spoken beats onto 5 canonical layouts.\"},{\"num\":\"04\",\"title\":\"Automated QC\",\"summary\":\"Verify fit, contrast, and Safe Zones pre-render.\"}]"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+    <title>Hero — Engineering Section Deck</title>
+    <link rel="stylesheet" href="../tokens/engineering-editorial/tokens.css" />
+    <link rel="stylesheet" href="../motion/transitions.css" />
+    <link rel="stylesheet" href="./engineering-section-deck.css" />
+    <script src="../../../video_pipeline/hyperframes/node_modules/gsap/dist/gsap.min.js"></script>
+    <script src="../motion/mechanics.js"></script>
+  </head>
+  <body>
+    <div id="root" data-composition-id="hero-engineering-section-deck" data-width="1920" data-height="1080" data-duration="5">
+      <div class="hf-stage">
+        <div class="hf-safe-frame">
+          <div id="hero-deck-shell" class="hf-hero-deck-shell">
+            <div class="hf-hero-deck-header">
+              <div>
+                <div class="hf-kicker">
+                  <span class="hf-kicker-rule" data-layout-ignore></span>
+                  <span id="hero-deck-kicker">HERO CHAPTER DECK</span>
+                </div>
+                <h1 id="hero-deck-title" class="hf-title">System Architecture Walkthrough</h1>
+              </div>
+              <div id="hero-deck-counter" class="hf-hero-deck-meta">02 / 04</div>
+            </div>
+            <div id="hero-deck-rail" class="hf-hero-deck-rail"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var vars = window.LessonMotion.getVariables();
+        window.LessonMotion.applyTheme(vars.theme);
+        document.getElementById("hero-deck-kicker").textContent = vars.kicker || "";
+        document.getElementById("hero-deck-title").textContent = vars.title || "";
+
+        var chapters = window.LessonMotion.parseList(vars.chapters, []);
+        var activeIdx = typeof vars.activeIndex === "number" ? vars.activeIndex : Number(vars.activeIndex || 0);
+        if (chapters.length > 0) {
+          activeIdx = Math.max(0, Math.min(chapters.length - 1, activeIdx));
+        }
+
+        var counterEl = document.getElementById("hero-deck-counter");
+        counterEl.textContent = "0" + (activeIdx + 1) + " / 0" + chapters.length;
+
+        var rail = document.getElementById("hero-deck-rail");
+        rail.innerHTML = "";
+        chapters.forEach(function (entry, idx) {
+          var item = typeof entry === "object" && entry !== null ? entry : { title: String(entry), summary: "" };
+          var isActive = idx === activeIdx;
+          var card = document.createElement("div");
+          card.className = "hf-hero-chapter-card" + (isActive ? " is-active" : "");
+
+          var top = document.createElement("div");
+          top.className = "hf-hero-card-top";
+          var num = document.createElement("span");
+          num.className = "hf-hero-card-num";
+          num.textContent = item.num || ("0" + (idx + 1));
+          top.appendChild(num);
+
+          if (isActive) {
+            var badge = document.createElement("span");
+            badge.className = "hf-hero-card-badge";
+            badge.textContent = "ACTIVE";
+            top.appendChild(badge);
+          }
+
+          var body = document.createElement("div");
+          var h2 = document.createElement("h2");
+          h2.className = "hf-hero-card-title";
+          h2.textContent = item.title || item.label || ("Chapter " + (idx + 1));
+          body.appendChild(h2);
+          if (item.summary || item.detail) {
+            var p = document.createElement("p");
+            p.className = "hf-hero-card-summary";
+            p.textContent = item.summary || item.detail;
+            body.appendChild(p);
+          }
+
+          var bar = document.createElement("div");
+          bar.className = "hf-hero-card-bar";
+          var fill = document.createElement("div");
+          fill.className = "hf-hero-card-bar-fill";
+          bar.appendChild(fill);
+
+          card.appendChild(top);
+          card.appendChild(body);
+          card.appendChild(bar);
+          rail.appendChild(card);
+        });
+
+        var tl = window.LessonMotion.createTimeline("hero-engineering-section-deck");
+        window.LessonMotion.textEntrances(tl, "#hero-deck-title", { at: 0, keepFrameZeroVisible: true });
+        window.LessonMotion.cards(tl, "#hero-deck-rail .hf-hero-chapter-card", { at: 0.06, stagger: 0.08 });
+        if (typeof gsap !== "undefined") {
+          tl.fromTo(
+            "#hero-deck-rail .hf-hero-chapter-card.is-active .hf-hero-card-bar-fill",
+            { scaleX: 0.15 },
+            { scaleX: 1, duration: 0.45, ease: "power2.out" },
+            0.22
+          );
+        }
+        window.__timelines = window.__timelines || {};
+        window.__timelines["hero-engineering-section-deck"] = tl;
+      })();
+    </script>
+  </body>
+</html>

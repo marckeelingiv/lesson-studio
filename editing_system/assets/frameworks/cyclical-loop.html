@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-theme="dark"
+  data-composition-variables='[
+    {"id":"theme","type":"enum","label":"Theme","default":"dark","options":[{"value":"dark","label":"Dark"},{"value":"light","label":"Light"}]},
+    {"id":"kicker","type":"string","label":"Kicker","default":"CYCLICAL FEEDBACK LOOP"},
+    {"id":"title","type":"string","label":"Title","default":"Compounding Quality Across Iterations"},
+    {"id":"items","type":"string","label":"Loop Nodes","default":"Storyboard:Plan beats and layouts|Contact Sheet:Verify stills before motion|QC Gates:Catch layout and audio defects|Taste Log:Record preferences for next cut"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+    <title>Framework — Cyclical Loop</title>
+    <link rel="stylesheet" href="../tokens/engineering-editorial/tokens.css" />
+    <link rel="stylesheet" href="../motion/transitions.css" />
+    <link rel="stylesheet" href="./frameworks.css" />
+    <script src="../../../video_pipeline/hyperframes/node_modules/gsap/dist/gsap.min.js"></script>
+    <script src="../motion/mechanics.js"></script>
+  </head>
+  <body>
+    <div id="root" data-composition-id="framework-cyclical-loop" data-width="1920" data-height="1080" data-duration="5">
+      <div class="hf-stage">
+        <div class="hf-safe-frame">
+          <div class="hf-fw-shell">
+            <div class="hf-fw-header">
+              <div class="hf-kicker">
+                <span class="hf-kicker-rule" data-layout-ignore></span>
+                <span id="fw-cycle-kicker">CYCLICAL FEEDBACK LOOP</span>
+              </div>
+              <h1 id="fw-cycle-title" class="hf-title">Compounding Quality Across Iterations</h1>
+            </div>
+            <div class="hf-fw-stage">
+              <div id="fw-cycle-grid" class="hf-fw-cycle-grid">
+                <svg class="hf-fw-cycle-ring" viewBox="0 0 220 220" fill="none">
+                  <circle
+                    class="hf-fw-cycle-arc"
+                    cx="110"
+                    cy="110"
+                    r="82"
+                    stroke="var(--border-strong)"
+                    stroke-width="6"
+                  />
+                  <path
+                    class="hf-fw-cycle-arc"
+                    d="M110 28 A82 82 0 0 1 192 110"
+                    stroke="var(--accent-primary)"
+                    stroke-width="8"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    class="hf-fw-cycle-arc"
+                    d="M110 192 A82 82 0 0 1 28 110"
+                    stroke="var(--accent-secondary)"
+                    stroke-width="8"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    class="hf-fw-cycle-arc"
+                    d="M180 96 L192 112 L204 96"
+                    stroke="var(--accent-primary)"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    class="hf-fw-cycle-arc"
+                    d="M40 124 L28 108 L16 124"
+                    stroke="var(--accent-secondary)"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var vars = window.LessonMotion.getVariables();
+        window.LessonMotion.applyTheme(vars.theme);
+        document.getElementById("fw-cycle-kicker").textContent = vars.kicker || "";
+        document.getElementById("fw-cycle-title").textContent = vars.title || "";
+
+        var pairs = window.LessonMotion.parsePairs(vars.items, []).slice(0, 4);
+        var positions = ["top", "right", "bottom", "left"];
+        var grid = document.getElementById("fw-cycle-grid");
+        pairs.forEach(function (pair, idx) {
+          var card = document.createElement("div");
+          card.className = "hf-fw-cycle-node hf-fw-cycle-node--" + positions[idx];
+          var num = document.createElement("div");
+          num.className = "hf-fw-step-num";
+          num.textContent = "0" + (idx + 1) + " · " + pair.label;
+          card.appendChild(num);
+          if (pair.detail) {
+            var detail = document.createElement("div");
+            detail.className = "hf-fw-step-detail";
+            detail.textContent = pair.detail;
+            card.appendChild(detail);
+          }
+          grid.appendChild(card);
+        });
+
+        var tl = window.LessonMotion.createTimeline("framework-cyclical-loop");
+        window.LessonMotion.textEntrances(tl, "#fw-cycle-title", { at: 0, keepFrameZeroVisible: true });
+        window.LessonMotion.circlesAndMarks(tl, "#fw-cycle-grid .hf-fw-cycle-arc", { at: 0.08, stagger: 0.08 });
+        window.LessonMotion.cards(tl, "#fw-cycle-grid .hf-fw-cycle-node", { at: 0.14, stagger: 0.09 });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["framework-cyclical-loop"] = tl;
+      })();
+    </script>
+  </body>
+</html>

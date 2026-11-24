@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-theme="dark"
+  data-composition-variables='[
+    {"id":"theme","type":"enum","label":"Theme","default":"dark","options":[{"value":"dark","label":"Dark"},{"value":"light","label":"Light"}]},
+    {"id":"kicker","type":"string","label":"Kicker","default":"HIERARCHICAL TREE"},
+    {"id":"title","type":"string","label":"Title","default":"Canonical OpenTimelineIO Track Hierarchy"},
+    {"id":"rootLabel","type":"string","label":"Root Node","default":"Timeline (.otio) — 30 fps Rational Clock"},
+    {"id":"items","type":"string","label":"Branches","default":"A-Roll Track:Primary screen + speaker cuts|Overlay Track:Motion Plates & Hero Decks|Audio Tracks:Voice (-14 LUFS) + Ducked Bed"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+    <title>Framework — Hierarchical Tree</title>
+    <link rel="stylesheet" href="../tokens/engineering-editorial/tokens.css" />
+    <link rel="stylesheet" href="../motion/transitions.css" />
+    <link rel="stylesheet" href="./frameworks.css" />
+    <script src="../../../video_pipeline/hyperframes/node_modules/gsap/dist/gsap.min.js"></script>
+    <script src="../motion/mechanics.js"></script>
+  </head>
+  <body>
+    <div id="root" data-composition-id="framework-hierarchical-tree" data-width="1920" data-height="1080" data-duration="5">
+      <div class="hf-stage">
+        <div class="hf-safe-frame">
+          <div class="hf-fw-shell">
+            <div class="hf-fw-header">
+              <div class="hf-kicker">
+                <span class="hf-kicker-rule" data-layout-ignore></span>
+                <span id="fw-tree-kicker">HIERARCHICAL TREE</span>
+              </div>
+              <h1 id="fw-tree-title" class="hf-title">Canonical OpenTimelineIO Track Hierarchy</h1>
+            </div>
+            <div class="hf-fw-stage">
+              <div class="hf-fw-tree-layout">
+                <div id="fw-tree-root" class="hf-fw-tree-root">
+                  <div class="hf-fw-step-num">ROOT</div>
+                  <div id="fw-tree-root-label" class="hf-fw-step-title">
+                    Timeline (.otio) — 30 fps Rational Clock
+                  </div>
+                </div>
+                <svg class="hf-fw-tree-connectors" viewBox="0 0 1200 76" fill="none">
+                  <path class="hf-fw-tree-edge" d="M600 0 V38" stroke="var(--accent-primary)" stroke-width="4" />
+                  <path class="hf-fw-tree-edge" d="M200 38 H1000" stroke="var(--border-strong)" stroke-width="4" />
+                  <path class="hf-fw-tree-edge" d="M200 38 V76" stroke="var(--accent-secondary)" stroke-width="4" />
+                  <path class="hf-fw-tree-edge" d="M600 38 V76" stroke="var(--accent-primary)" stroke-width="4" />
+                  <path class="hf-fw-tree-edge" d="M1000 38 V76" stroke="var(--accent-secondary)" stroke-width="4" />
+                </svg>
+                <div id="fw-tree-branches" class="hf-fw-tree-branches"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var vars = window.LessonMotion.getVariables();
+        window.LessonMotion.applyTheme(vars.theme);
+        document.getElementById("fw-tree-kicker").textContent = vars.kicker || "";
+        document.getElementById("fw-tree-title").textContent = vars.title || "";
+        document.getElementById("fw-tree-root-label").textContent = vars.rootLabel || "";
+
+        var pairs = window.LessonMotion.parsePairs(vars.items, []).slice(0, 3);
+        var container = document.getElementById("fw-tree-branches");
+        container.innerHTML = "";
+        pairs.forEach(function (pair, idx) {
+          var branch = document.createElement("div");
+          branch.className = "hf-fw-tree-branch";
+          var num = document.createElement("div");
+          num.className = "hf-fw-step-num";
+          num.textContent = "TIER 0" + (idx + 1);
+          var label = document.createElement("div");
+          label.className = "hf-fw-step-title";
+          label.textContent = pair.label;
+          branch.appendChild(num);
+          branch.appendChild(label);
+          if (pair.detail) {
+            var leaf = document.createElement("div");
+            leaf.className = "hf-fw-tree-leaf";
+            leaf.textContent = pair.detail;
+            branch.appendChild(leaf);
+          }
+          container.appendChild(branch);
+        });
+
+        var tl = window.LessonMotion.createTimeline("framework-hierarchical-tree");
+        window.LessonMotion.textEntrances(tl, "#fw-tree-title", { at: 0, keepFrameZeroVisible: true });
+        window.LessonMotion.cards(tl, "#fw-tree-root", { at: 0.04 });
+        window.LessonMotion.circlesAndMarks(tl, ".hf-fw-tree-edge", { at: 0.14, stagger: 0.06 });
+        window.LessonMotion.cards(tl, "#fw-tree-branches .hf-fw-tree-branch", { at: 0.24, stagger: 0.08 });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["framework-hierarchical-tree"] = tl;
+      })();
+    </script>
+  </body>
+</html>

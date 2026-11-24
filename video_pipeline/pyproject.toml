@@ -7,6 +7,13 @@ dependencies = [
     "av>=11,<19", # faster-whisper 1.2 uses metadata_errors, removed in PyAV 19.
     "faster-whisper>=1.1.0",
     "litellm>=1.60.0",
+    "numpy>=2.0.0",
+    "opencv-python-headless>=4.10.0",
+    "opentimelineio>=0.18.0",
+    "otio-fcpx-xml-lite-adapter>=0.2.0",
+    "otio-kdenlive-adapter>=0.0.3",
+    "pillow>=11.0.0",
     "pydantic>=2.10.0",
+    "pyyaml>=6.0.2",
     "typer>=0.15.0",
 ]

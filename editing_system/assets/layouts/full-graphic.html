@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-theme="dark"
+  data-composition-variables='[
+    {"id":"theme","type":"enum","label":"Theme","default":"dark","options":[{"value":"dark","label":"Dark"},{"value":"light","label":"Light"}]},
+    {"id":"kicker","type":"string","label":"Kicker","default":"FULL GRAPHIC PLATE"},
+    {"id":"title","type":"string","label":"Title","default":"Four-Stage Deterministic Verification"},
+    {"id":"subtitle","type":"string","label":"Subtitle","default":"Every gate validates geometry, audio tails, and timeline hashes before render."},
+    {"id":"metricValue","type":"number","label":"Metric Value","default":99.4},
+    {"id":"metricSuffix","type":"string","label":"Metric Suffix","default":"%"},
+    {"id":"metricLabel","type":"string","label":"Metric Label","default":"Gate Coverage"},
+    {"id":"items","type":"string","label":"Nodes","default":"Ingest:Probe VFR & WAV|Sift:Room-tone & tail guard|Storyboard:5 canonical layouts|QC:8 blocking gates"},
+    {"id":"transition","type":"enum","label":"Transition","default":"subtle","options":[{"value":"subtle","label":"Subtle"},{"value":"swipe","label":"Swipe"},{"value":"zoom","label":"Zoom"}]}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+    <title>Layout — Full Graphic</title>
+    <link rel="stylesheet" href="../tokens/engineering-editorial/tokens.css" />
+    <link rel="stylesheet" href="../motion/transitions.css" />
+    <link rel="stylesheet" href="./layouts.css" />
+    <script src="../../../video_pipeline/hyperframes/node_modules/gsap/dist/gsap.min.js"></script>
+    <script src="../motion/mechanics.js"></script>
+  </head>
+  <body>
+    <div id="root" data-composition-id="layout-full-graphic" data-width="1920" data-height="1080" data-duration="5">
+      <div class="hf-stage">
+        <div class="hf-safe-frame">
+          <div id="full-graphic-layer" class="hf-transition-layer hf-layout-full-graphic">
+            <div class="hf-graphic-header">
+              <div class="hf-graphic-title-group">
+                <div class="hf-kicker">
+                  <span class="hf-kicker-rule" data-layout-ignore></span>
+                  <span id="graphic-kicker">FULL GRAPHIC PLATE</span>
+                </div>
+                <h1 id="graphic-title" class="hf-title">Four-Stage Deterministic Verification</h1>
+                <p id="graphic-subtitle" class="hf-subtitle">
+                  Every gate validates geometry, audio tails, and timeline hashes before render.
+                </p>
+              </div>
+              <div id="graphic-metric-box" class="hf-graphic-metric-box">
+                <span id="graphic-metric-value" class="hf-graphic-metric-value">99.4%</span>
+                <span id="graphic-metric-label" class="hf-graphic-metric-label">Gate Coverage</span>
+              </div>
+            </div>
+            <div id="graphic-board" class="hf-graphic-board"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var vars = window.LessonMotion.getVariables();
+        window.LessonMotion.applyTheme(vars.theme);
+        document.getElementById("graphic-kicker").textContent = vars.kicker || "";
+        document.getElementById("graphic-title").textContent = vars.title || "";
+        document.getElementById("graphic-subtitle").textContent = vars.subtitle || "";
+        document.getElementById("graphic-metric-label").textContent = vars.metricLabel || "Gate Coverage";
+
+        var pairs = window.LessonMotion.parsePairs(vars.items, []);
+        var board = document.getElementById("graphic-board");
+        board.innerHTML = "";
+        pairs.forEach(function (pair, idx) {
+          var card = document.createElement("div");
+          card.className = "hf-graphic-node";
+          var num = document.createElement("div");
+          num.className = "hf-graphic-node-index";
+          num.textContent = "0" + (idx + 1);
+          var title = document.createElement("div");
+          title.className = "hf-graphic-node-title";
+          title.textContent = pair.label;
+          card.appendChild(num);
+          card.appendChild(title);
+          if (pair.detail) {
+            var detail = document.createElement("div");
+            detail.className = "hf-graphic-node-detail";
+            detail.textContent = pair.detail;
+            card.appendChild(detail);
+          }
+          board.appendChild(card);
+        });
+
+        var metricTarget = typeof vars.metricValue === "number" ? vars.metricValue : Number(vars.metricValue || 99.4);
+        var hasDecimals = String(metricTarget).indexOf(".") !== -1;
+
+        var tl = window.LessonMotion.createTimeline("layout-full-graphic");
+        window.LessonMotion.applyTransition(tl, "#full-graphic-layer", vars.transition || "subtle", { at: 0 });
+        window.LessonMotion.textEntrances(tl, ["#graphic-title", "#graphic-subtitle"], {
+          at: 0,
+          keepFrameZeroVisible: true
+        });
+        window.LessonMotion.liveNumbers(tl, "#graphic-metric-value", {
+          from: 0,
+          to: metricTarget,
+          decimals: hasDecimals ? 1 : 0,
+          suffix: vars.metricSuffix != null ? String(vars.metricSuffix) : "%",
+          at: 0.05,
+          duration: 0.8
+        });
+        window.LessonMotion.cards(tl, "#graphic-board .hf-graphic-node", { at: 0.12, stagger: 0.08 });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["layout-full-graphic"] = tl;
+      })();
+    </script>
+  </body>
+</html>

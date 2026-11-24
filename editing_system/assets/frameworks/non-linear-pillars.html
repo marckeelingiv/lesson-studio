@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-theme="dark"
+  data-composition-variables='[
+    {"id":"theme","type":"enum","label":"Theme","default":"dark","options":[{"value":"dark","label":"Dark"},{"value":"light","label":"Light"}]},
+    {"id":"kicker","type":"string","label":"Kicker","default":"NON-LINEAR SYSTEM"},
+    {"id":"title","type":"string","label":"Title","default":"Four Pillars Supporting Every Lesson Cut"},
+    {"id":"hubLabel","type":"string","label":"Hub Label","default":"ENGINE CORE"},
+    {"id":"hubTitle","type":"string","label":"Hub Title","default":"Two Engine Rooms Architecture"},
+    {"id":"items","type":"string","label":"Pillars","default":"Technical Rules:Static sifting & QC invariants|Creative Brief:Tone dials & visual anchors|Asset Catalog:Tokenized reusable templates|Taste Profile:Compounding review memory"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+    <title>Framework — Non-Linear Pillars</title>
+    <link rel="stylesheet" href="../tokens/engineering-editorial/tokens.css" />
+    <link rel="stylesheet" href="../motion/transitions.css" />
+    <link rel="stylesheet" href="./frameworks.css" />
+    <script src="../../../video_pipeline/hyperframes/node_modules/gsap/dist/gsap.min.js"></script>
+    <script src="../motion/mechanics.js"></script>
+  </head>
+  <body>
+    <div id="root" data-composition-id="framework-non-linear-pillars" data-width="1920" data-height="1080" data-duration="5">
+      <div class="hf-stage">
+        <div class="hf-safe-frame">
+          <div class="hf-fw-shell">
+            <div class="hf-fw-header">
+              <div class="hf-kicker">
+                <span class="hf-kicker-rule" data-layout-ignore></span>
+                <span id="fw-pillars-kicker">NON-LINEAR SYSTEM</span>
+              </div>
+              <h1 id="fw-pillars-title" class="hf-title">Four Pillars Supporting Every Lesson Cut</h1>
+            </div>
+            <div class="hf-fw-stage">
+              <div class="hf-fw-pillars-layout">
+                <div id="fw-pillars-hub" class="hf-fw-hub-banner">
+                  <span id="fw-pillars-hub-label" class="hf-fw-hub-label">ENGINE CORE</span>
+                  <span id="fw-pillars-hub-title" class="hf-fw-hub-title">Two Engine Rooms Architecture</span>
+                </div>
+                <div id="fw-pillars-grid" class="hf-fw-pillars-grid"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var vars = window.LessonMotion.getVariables();
+        window.LessonMotion.applyTheme(vars.theme);
+        document.getElementById("fw-pillars-kicker").textContent = vars.kicker || "";
+        document.getElementById("fw-pillars-title").textContent = vars.title || "";
+        document.getElementById("fw-pillars-hub-label").textContent = vars.hubLabel || "SYSTEM HUB";
+        document.getElementById("fw-pillars-hub-title").textContent = vars.hubTitle || "";
+
+        var pairs = window.LessonMotion.parsePairs(vars.items, []);
+        var grid = document.getElementById("fw-pillars-grid");
+        grid.innerHTML = "";
+        pairs.forEach(function (pair, idx) {
+          var card = document.createElement("div");
+          card.className = "hf-fw-pillar-card";
+          var num = document.createElement("div");
+          num.className = "hf-fw-step-num";
+          num.textContent = "P" + (idx + 1);
+          var title = document.createElement("div");
+          title.className = "hf-fw-step-title";
+          title.textContent = pair.label;
+          card.appendChild(num);
+          card.appendChild(title);
+          if (pair.detail) {
+            var detail = document.createElement("div");
+            detail.className = "hf-fw-step-detail";
+            detail.textContent = pair.detail;
+            card.appendChild(detail);
+          }
+          grid.appendChild(card);
+        });
+
+        var tl = window.LessonMotion.createTimeline("framework-non-linear-pillars");
+        window.LessonMotion.textEntrances(tl, "#fw-pillars-title", { at: 0, keepFrameZeroVisible: true });
+        window.LessonMotion.slides(tl, "#fw-pillars-hub", { at: 0.05, y: -12, x: 0 });
+        window.LessonMotion.cards(tl, "#fw-pillars-grid .hf-fw-pillar-card", { at: 0.14, stagger: 0.08 });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["framework-non-linear-pillars"] = tl;
+      })();
+    </script>
+  </body>
+</html>

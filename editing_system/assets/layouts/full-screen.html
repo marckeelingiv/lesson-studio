@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-theme="dark"
+  data-composition-variables='[
+    {"id":"theme","type":"enum","label":"Theme","default":"dark","options":[{"value":"dark","label":"Dark"},{"value":"light","label":"Light"}]},
+    {"id":"kicker","type":"string","label":"Kicker","default":"KEY THESIS"},
+    {"id":"title","type":"string","label":"Title","default":"Measure Latency Before Tuning Code"},
+    {"id":"subtitle","type":"string","label":"Subtitle","default":"Start from a verified trace so every fix removes a real bottleneck."},
+    {"id":"mediaSrc","type":"string","label":"Media Source","default":""},
+    {"id":"speakerLabel","type":"string","label":"Speaker Label","default":"A-Roll Speaker Frame"},
+    {"id":"transition","type":"enum","label":"Transition","default":"subtle","options":[{"value":"subtle","label":"Subtle"},{"value":"swipe","label":"Swipe"},{"value":"zoom","label":"Zoom"}]}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+    <title>Layout — Full Screen</title>
+    <link rel="stylesheet" href="../tokens/engineering-editorial/tokens.css" />
+    <link rel="stylesheet" href="../motion/transitions.css" />
+    <link rel="stylesheet" href="./layouts.css" />
+    <script src="../../../video_pipeline/hyperframes/node_modules/gsap/dist/gsap.min.js"></script>
+    <script src="../motion/mechanics.js"></script>
+  </head>
+  <body>
+    <div id="root" data-composition-id="layout-full-screen" data-width="1920" data-height="1080" data-duration="5">
+      <div class="hf-stage">
+        <div id="full-screen-layer" class="hf-transition-layer hf-layout-full-screen">
+          <div id="full-screen-backdrop" class="hf-fullscreen-backdrop hf-fullscreen-backdrop--empty" data-slot="speaker">
+            <div class="hf-fullscreen-placeholder" id="full-screen-placeholder">
+              <span id="full-screen-speaker-label">A-Roll Speaker Frame</span>
+            </div>
+          </div>
+          <div id="full-screen-thesis" class="hf-fullscreen-thesis">
+            <div class="hf-kicker">
+              <span class="hf-kicker-rule" data-layout-ignore></span>
+              <span id="full-screen-kicker">KEY THESIS</span>
+            </div>
+            <h1 id="full-screen-title" class="hf-title">Measure Latency Before Tuning Code</h1>
+            <p id="full-screen-subtitle" class="hf-subtitle">
+              Start from a verified trace so every fix removes a real bottleneck.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var vars = window.LessonMotion.getVariables();
+        window.LessonMotion.applyTheme(vars.theme);
+        document.getElementById("full-screen-kicker").textContent = vars.kicker || "";
+        document.getElementById("full-screen-title").textContent = vars.title || "";
+        document.getElementById("full-screen-subtitle").textContent = vars.subtitle || "";
+        document.getElementById("full-screen-speaker-label").textContent = vars.speakerLabel || "A-Roll Speaker Frame";
+
+        if (vars.mediaSrc) {
+          var backdrop = document.getElementById("full-screen-backdrop");
+          backdrop.classList.remove("hf-fullscreen-backdrop--empty");
+          backdrop.innerHTML = "";
+          var img = document.createElement("img");
+          img.className = "hf-fullscreen-media";
+          img.src = vars.mediaSrc;
+          img.alt = vars.title || "Scene Frame";
+          backdrop.appendChild(img);
+        }
+
+        var tl = window.LessonMotion.createTimeline("layout-full-screen");
+        window.LessonMotion.applyTransition(tl, "#full-screen-layer", vars.transition || "subtle", { at: 0 });
+        window.LessonMotion.textEntrances(tl, ["#full-screen-title", "#full-screen-subtitle"], {
+          at: 0,
+          keepFrameZeroVisible: true,
+          stagger: 0.1
+        });
+        window.LessonMotion.cards(tl, "#full-screen-thesis", { at: 0.05 });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["layout-full-screen"] = tl;
+      })();
+    </script>
+  </body>
+</html>

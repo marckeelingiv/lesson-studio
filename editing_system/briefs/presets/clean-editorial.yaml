@@ -1,0 +1,25 @@
+# Default Creative Engine Room Preset: Clean Editorial
+# Designed for technical engineering lessons prioritizing clarity over hype.
+
+preset_id: "clean-editorial"
+description: "Restrained motion, real evidence focus, understated audio, max 3 transitions."
+
+feel:
+  animation: 2
+  visuals: 2
+  sound_design: 1
+  pacing: "steady"
+  max_transitions: 3
+  allowed_transitions:
+    - "subtle"
+    - "swipe"
+    - "zoom"
+
+delivery_target:
+  aspect_ratio: "16:9"
+  width: 1920
+  height: 1080
+  fps: 30
+  loudness_lufs: -14.0
+  true_peak_dbtp: -1.0
+  captions_enabled: true

@@ -1,0 +1,45 @@
+{
+  "id": "tok-engineering-editorial",
+  "name": "Engineering Editorial",
+  "default_theme": "dark",
+  "css_tokens": "tokens.css",
+  "typography": {
+    "sans": "Inter",
+    "mono": "JetBrains Mono"
+  },
+  "themes": {
+    "dark": {
+      "bg_canvas": "#0b1014",
+      "bg_surface": "#121920",
+      "bg_surface_elevated": "#18222c",
+      "text_primary": "#f1f5f9",
+      "text_secondary": "#94a3b8",
+      "border_subtle": "#24313e",
+      "accent_primary": "#38bdf8",
+      "accent_secondary": "#a3e635",
+      "caption_active": "#facc15"
+    },
+    "light": {
+      "bg_canvas": "#f8fafc",
+      "bg_surface": "#ffffff",
+      "bg_surface_elevated": "#f1f5f9",
+      "text_primary": "#0f172a",
+      "text_secondary": "#475569",
+      "border_subtle": "#cbd5e1",
+      "accent_primary": "#0284c7",
+      "accent_secondary": "#4d7c0f",
+      "caption_active": "#facc15"
+    }
+  },
+  "safe_zone_16_9": {
+    "width": 1920,
+    "height": 1080,
+    "margin_x_px": 96,
+    "margin_y_px": 54,
+    "caption_bottom_px": 72
+  },
+  "anti_slop": {
+    "allow_neon_glow_gradients": false,
+    "allow_animated_background_blobs": false
+  }
+}

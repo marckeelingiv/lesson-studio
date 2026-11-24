@@ -12,3 +12,7 @@ help:
 	@echo "  make video-run VIDEO_INPUT=... [VIDEO_MODEL=...]        Run full transcribe -> plan -> assemble -> render pipeline"
 	@echo "                 [VIDEO_EVENTS=...] [VIDEO_CAMERA=...]"
 	@echo "  make video-studio                                       Open Remotion Studio for template preview"
+	@echo "  make video-sift VIDEO_INPUT=...                         Run Stage 1 scientific sifting"
+	@echo "  make video-contact-sheet STORYBOARD=... MANIFEST=...    Generate Stage 2 HyperFrames Contact Sheet"
+	@echo "  make video-qc VIDEO_INPUT=...                           Run automated QC gates"
+	@echo "  make video-catalog-check                                Validate editing_system/assets/catalog.json"

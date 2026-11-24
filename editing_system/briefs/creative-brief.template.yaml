@@ -1,0 +1,66 @@
+# Creative Brief Template (Creative Engine Room)
+# Copy into your lesson or workspace run directory and fill before Stage 0.
+# All terms follow GLOSSARY.md.
+
+schema_version: 1
+video_id: "de-for-fun/example-lesson"
+title: "Lesson or Walkthrough Title"
+audience: "Engineers, hiring managers, and technical peers"
+communication_goal: "Explain the decision, evidence, and tradeoff clearly."
+
+# Entry workflow:
+#   sift         -> raw A-Roll enters Stage 1 Scientific Sift
+#   clean_a_roll -> already-edited Rough Cut enters Stage 2 Storyboard
+entry_mode: "sift"
+
+# Token kit id from editing_system/assets/catalog.json
+token_kit: "tok-engineering-editorial"
+theme: "dark" # dark | light
+
+# Default editorial preset: clean-editorial
+preset: "clean-editorial"
+
+# 1. References (MAX 2 videos total; never add 10-50 examples)
+references:
+  - label: "good" # good | not_good
+    url_or_path: ""
+    emulate:
+      - "b_roll"
+      - "scene_layouts"
+      - "sound_design"
+    notes: "Specific attributes to emulate or avoid."
+
+# 2. The Feel (Creative Engine Room dials: 1 = minimal/clean, 5 = retention max)
+feel:
+  animation: 2
+  visuals: 2
+  sound_design: 1
+  pacing: "steady" # deliberate | steady | punchy
+  max_transitions: 3 # Technical Engine Room hard ceiling is 3
+  allowed_transitions:
+    - "subtle"
+    - "swipe"
+    - "zoom"
+
+# Specific spoken timestamps or concepts to emphasize visually
+moments:
+  - cue: "00:00-00:15"
+    intent: "Establish the core engineering problem immediately."
+    preferred_layout: "Full Screen"
+
+# 3. Starting Visuals (Concrete anchor so agents never invent generic metaphors)
+starting_visuals:
+  hero_template_goal: "Reuse 1-2 signature templates across lesson chapters."
+  anchors:
+    - "Real dashboard or terminal capture"
+    - "Diagram screenshot or verified architecture artifact"
+
+# Delivery target (v1 supports 16:9; 9:16 reserved for later phase)
+delivery_target:
+  aspect_ratio: "16:9"
+  width: 1920
+  height: 1080
+  fps: 30
+  loudness_lufs: -14.0
+  true_peak_dbtp: -1.0
+  captions_enabled: true

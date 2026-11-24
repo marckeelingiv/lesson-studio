@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-theme="dark"
+  data-composition-variables='[
+    {"id":"theme","type":"enum","label":"Theme","default":"dark","options":[{"value":"dark","label":"Dark"},{"value":"light","label":"Light"}]},
+    {"id":"speakerSide","type":"enum","label":"Speaker Side","default":"left","options":[{"value":"left","label":"Left"},{"value":"right","label":"Right"}]},
+    {"id":"kicker","type":"string","label":"Kicker","default":"ARCHITECTURE PANEL"},
+    {"id":"title","type":"string","label":"Title","default":"Separate Capture From Rendering"},
+    {"id":"subtitle","type":"string","label":"Subtitle","default":"Keep source frames untouched and compose deterministic overlays."},
+    {"id":"items","type":"string","label":"Items","default":"Probe stream VFR before cuts|Preserve consonant audio tails|Verify Safe Zones on static stills"},
+    {"id":"mediaSrc","type":"string","label":"Media Source","default":""},
+    {"id":"speakerLabel","type":"string","label":"Speaker Label","default":"Speaker Feed"},
+    {"id":"transition","type":"enum","label":"Transition","default":"subtle","options":[{"value":"subtle","label":"Subtle"},{"value":"swipe","label":"Swipe"},{"value":"zoom","label":"Zoom"}]}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+    <title>Layout — Panel</title>
+    <link rel="stylesheet" href="../tokens/engineering-editorial/tokens.css" />
+    <link rel="stylesheet" href="../motion/transitions.css" />
+    <link rel="stylesheet" href="./layouts.css" />
+    <script src="../../../video_pipeline/hyperframes/node_modules/gsap/dist/gsap.min.js"></script>
+    <script src="../motion/mechanics.js"></script>
+  </head>
+  <body>
+    <div id="root" data-composition-id="layout-panel" data-width="1920" data-height="1080" data-duration="5">
+      <div class="hf-stage">
+        <div class="hf-safe-frame">
+          <div id="panel-layer" class="hf-transition-layer hf-layout-panel">
+            <div id="panel-speaker" class="hf-panel-speaker" data-slot="speaker">
+              <div id="panel-speaker-tag" class="hf-panel-speaker-tag">Speaker Feed</div>
+            </div>
+            <div id="panel-content" class="hf-panel-content" data-slot="content">
+              <div class="hf-kicker">
+                <span class="hf-kicker-rule" data-layout-ignore></span>
+                <span id="panel-kicker">ARCHITECTURE PANEL</span>
+              </div>
+              <h1 id="panel-title" class="hf-title">Separate Capture From Rendering</h1>
+              <p id="panel-subtitle" class="hf-subtitle">
+                Keep source frames untouched and compose deterministic overlays.
+              </p>
+              <ul id="panel-list" class="hf-panel-list"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var vars = window.LessonMotion.getVariables();
+        window.LessonMotion.applyTheme(vars.theme);
+        var layer = document.getElementById("panel-layer");
+        if (vars.speakerSide === "right") {
+          layer.classList.add("hf-layout-panel--speaker-right");
+        }
+        document.getElementById("panel-kicker").textContent = vars.kicker || "";
+        document.getElementById("panel-title").textContent = vars.title || "";
+        document.getElementById("panel-subtitle").textContent = vars.subtitle || "";
+        document.getElementById("panel-speaker-tag").textContent = vars.speakerLabel || "Speaker Feed";
+
+        if (vars.mediaSrc) {
+          var speakerBox = document.getElementById("panel-speaker");
+          var img = document.createElement("img");
+          img.className = "hf-panel-speaker-media";
+          img.src = vars.mediaSrc;
+          img.alt = vars.speakerLabel || "Speaker Feed";
+          speakerBox.insertBefore(img, speakerBox.firstChild);
+        }
+
+        var items = window.LessonMotion.parseList(vars.items, []);
+        var list = document.getElementById("panel-list");
+        list.innerHTML = "";
+        items.forEach(function (itemText, idx) {
+          var li = document.createElement("li");
+          li.className = "hf-panel-item";
+          var num = document.createElement("span");
+          num.className = "hf-panel-bullet";
+          num.textContent = "0" + (idx + 1);
+          var span = document.createElement("span");
+          span.textContent = String(itemText);
+          li.appendChild(num);
+          li.appendChild(span);
+          list.appendChild(li);
+        });
+
+        var tl = window.LessonMotion.createTimeline("layout-panel");
+        window.LessonMotion.applyTransition(tl, "#panel-layer", vars.transition || "subtle", { at: 0 });
+        window.LessonMotion.textEntrances(tl, ["#panel-title", "#panel-subtitle"], {
+          at: 0,
+          keepFrameZeroVisible: true,
+          stagger: 0.08
+        });
+        window.LessonMotion.cards(tl, "#panel-list .hf-panel-item", { at: 0.12, stagger: 0.08 });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["layout-panel"] = tl;
+      })();
+    </script>
+  </body>
+</html>

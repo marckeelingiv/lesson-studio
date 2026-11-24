@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-theme="dark"
+  data-composition-variables='[
+    {"id":"theme","type":"enum","label":"Theme","default":"dark","options":[{"value":"dark","label":"Dark"},{"value":"light","label":"Light"}]},
+    {"id":"kicker","type":"string","label":"Kicker","default":"TRADEOFF COMPARISON"},
+    {"id":"title","type":"string","label":"Title","default":"Ad-Hoc Scripts vs. Deterministic Pipeline"},
+    {"id":"leftLabel","type":"string","label":"Left Label","default":"BEFORE"},
+    {"id":"leftPoints","type":"string","label":"Left Points","default":"Fixed dB cutoffs clip quiet words|Unchecked CSS overflows render broken|One-off animations cannot reuse"},
+    {"id":"rightLabel","type":"string","label":"Right Label","default":"AFTER"},
+    {"id":"rightPoints","type":"string","label":"Right Points","default":"Adaptive room-tone & tail guard|Automated fit and Safe Zone checks|Tokenized reusable Motion Plates"},
+    {"id":"speakerLabel","type":"string","label":"Speaker Label","default":"Speaker Centre"},
+    {"id":"transition","type":"enum","label":"Transition","default":"subtle","options":[{"value":"subtle","label":"Subtle"},{"value":"swipe","label":"Swipe"},{"value":"zoom","label":"Zoom"}]}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+    <title>Layout — Centre</title>
+    <link rel="stylesheet" href="../tokens/engineering-editorial/tokens.css" />
+    <link rel="stylesheet" href="../motion/transitions.css" />
+    <link rel="stylesheet" href="./layouts.css" />
+    <script src="../../../video_pipeline/hyperframes/node_modules/gsap/dist/gsap.min.js"></script>
+    <script src="../motion/mechanics.js"></script>
+  </head>
+  <body>
+    <div id="root" data-composition-id="layout-centre" data-width="1920" data-height="1080" data-duration="5">
+      <div class="hf-stage">
+        <div class="hf-safe-frame">
+          <div id="centre-layer" class="hf-transition-layer hf-layout-centre">
+            <div class="hf-centre-header">
+              <div class="hf-kicker">
+                <span class="hf-kicker-rule" data-layout-ignore></span>
+                <span id="centre-kicker">TRADEOFF COMPARISON</span>
+              </div>
+              <h1 id="centre-title" class="hf-title">Ad-Hoc Scripts vs. Deterministic Pipeline</h1>
+            </div>
+            <div class="hf-centre-columns">
+              <div id="centre-left" class="hf-centre-card hf-centre-card--left">
+                <div id="centre-left-label" class="hf-centre-card-label">BEFORE</div>
+                <ul id="centre-left-points" class="hf-centre-points"></ul>
+              </div>
+              <div id="centre-speaker" class="hf-centre-speaker" data-slot="speaker">
+                <div id="centre-speaker-tag" class="hf-panel-speaker-tag">Speaker Centre</div>
+              </div>
+              <div id="centre-right" class="hf-centre-card hf-centre-card--right">
+                <div id="centre-right-label" class="hf-centre-card-label">AFTER</div>
+                <ul id="centre-right-points" class="hf-centre-points"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var vars = window.LessonMotion.getVariables();
+        window.LessonMotion.applyTheme(vars.theme);
+        document.getElementById("centre-kicker").textContent = vars.kicker || "";
+        document.getElementById("centre-title").textContent = vars.title || "";
+        document.getElementById("centre-left-label").textContent = vars.leftLabel || "BEFORE";
+        document.getElementById("centre-right-label").textContent = vars.rightLabel || "AFTER";
+        document.getElementById("centre-speaker-tag").textContent = vars.speakerLabel || "Speaker Centre";
+
+        function fillPoints(elId, raw) {
+          var ul = document.getElementById(elId);
+          ul.innerHTML = "";
+          window.LessonMotion.parseList(raw, []).forEach(function (pt) {
+            var li = document.createElement("li");
+            li.className = "hf-centre-point";
+            li.textContent = String(pt);
+            ul.appendChild(li);
+          });
+        }
+        fillPoints("centre-left-points", vars.leftPoints);
+        fillPoints("centre-right-points", vars.rightPoints);
+
+        var tl = window.LessonMotion.createTimeline("layout-centre");
+        window.LessonMotion.applyTransition(tl, "#centre-layer", vars.transition || "subtle", { at: 0 });
+        window.LessonMotion.textEntrances(tl, "#centre-title", { at: 0, keepFrameZeroVisible: true });
+        window.LessonMotion.slides(tl, "#centre-left", { at: 0.08, x: -30 });
+        window.LessonMotion.slides(tl, "#centre-right", { at: 0.14, x: 30 });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["layout-centre"] = tl;
+      })();
+    </script>
+  </body>
+</html>

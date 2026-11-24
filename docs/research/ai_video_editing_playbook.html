@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Video Editing Playbook: Claude Code + Remotion / Hyperframes</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+          colors: {
+            slate: {
+              850: '#141c2f',
+              925: '#0b1120',
+              950: '#070b14',
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Mermaid.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+  <!-- Minimal Print & Custom Utility Styles -->
+  <style>
+    /* Ensure Mermaid SVGs scale cleanly without page-level overflow */
+    .mermaid-output svg {
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+      display: block;
+    }
+
+    /* Subtle scrollbar for code/diagram containers */
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.35);
+      border-radius: 9999px;
+    }
+
+    /* Print-friendly layout overrides */
+    @media print {
+      html,
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-break-avoid {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .print-card {
+        border: 1px solid #cbd5e1 !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+      }
+      pre {
+        white-space: pre-wrap !important;
+        word-break: break-word !important;
+        background: #f8fafc !important;
+        color: #0f172a !important;
+        border: 1px solid #e2e8f0 !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased transition-colors duration-200 selection:bg-indigo-500/30 selection:text-indigo-200">
+  <!-- Sticky Top Navigation Bar -->
+  <header class="no-print sticky top-0 z-40 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/85 dark:bg-slate-950/85 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap items-center justify-between gap-3 py-3">
+        <!-- Brand / Logo -->
+        <a href="#top" class="flex items-center gap-2.5 group focus:outline-none">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+          </div>
+          <div class="leading-tight">
+            <span class="block text-sm font-bold tracking-tight text-slate-900 dark:text-white group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
+              AI Video Playbook
+            </span>
+            <span class="block text-[11px] font-medium text-slate-500 dark:text-slate-400">
+              Claude Code + Remotion / Hyperframes
+            </span>
+          </div>
+        </a>
+
+        <!-- Navigation Tabs -->
+        <nav aria-label="Playbook Sections" class="order-3 md:order-2 w-full md:w-auto flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-x-auto">
+          <a
+            href="#diagrams"
+            data-nav-link="diagrams"
+            class="nav-tab flex-1 md:flex-none text-center whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+          >
+            1. Workflow Diagrams
+          </a>
+          <a
+            href="#prompts"
+            data-nav-link="prompts"
+            class="nav-tab flex-1 md:flex-none text-center whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+          >
+            2. Prompt Templates
+          </a>
+          <a
+            href="#mental-model"
+            data-nav-link="mental-model"
+            class="nav-tab flex-1 md:flex-none text-center whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+          >
+            3. Mental Model
+          </a>
+        </nav>
+
+        <!-- Action Controls: Print, Download HTML, Theme Toggle -->
+        <div class="order-2 md:order-3 flex items-center gap-2">
+          <button
+            id="print-btn"
+            type="button"
+            title="Print Playbook"
+            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-colors cursor-pointer"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
+            </svg>
+            <span class="hidden sm:inline">Print</span>
+          </button>
+
+          <button
+            id="download-btn"
+            type="button"
+            title="Download Standalone HTML"
+            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-colors cursor-pointer"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            <span class="hidden sm:inline">HTML</span>
+          </button>
+
+          <button
+            id="theme-toggle"
+            type="button"
+            aria-label="Toggle Dark and Light Mode"
+            class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-amber-300 border border-slate-200 dark:border-slate-800 transition-colors cursor-pointer"
+          >
+            <!-- Sun Icon (shown in dark mode) -->
+            <svg id="icon-sun" class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+            </svg>
+            <!-- Moon Icon (shown in light mode) -->
+            <svg id="icon-moon" class="w-4 h-4 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main id="top" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-16">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/70 p-6 sm:p-10 shadow-sm print-card">
+      <div class="no-print absolute -top-24 -right-24 w-72 h-72 bg-indigo-500/10 dark:bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="relative z-10 max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-500/20 mb-4">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          Interactive Video-as-Code Playbook
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+          AI Video Editing Playbook:
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-violet-500 dark:from-indigo-400 dark:to-violet-400">
+            Claude Code + Remotion / Hyperframes
+          </span>
+        </h1>
+        <p class="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+          A repeatable hybrid workflow for pairing a clean human talking-head A-cut with AI coding agents that generate modular motion plates, sync audio via API, and enable instant global rebrands.
+        </p>
+
+        <!-- Quick Stats / Progress Pill -->
+        <div class="mt-6 flex flex-wrap items-center gap-3">
+          <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-xs font-medium text-slate-700 dark:text-slate-300">
+            <span class="text-indigo-500 font-bold">3</span> Architecture Diagrams
+          </div>
+          <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-xs font-medium text-slate-700 dark:text-slate-300">
+            <span class="text-emerald-500 font-bold" id="hero-progress-count">0 / 7</span> Prompts Completed
+          </div>
+          <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-xs font-medium text-slate-700 dark:text-slate-300">
+            <span class="text-violet-500 font-bold">5</span> Mental Model Principles
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 1: WORKFLOW DIAGRAMS                              -->
+    <!-- ========================================================= -->
+    <section id="diagrams" class="scroll-mt-24 space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 01</p>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">
+            Workflow Diagrams
+          </h2>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+          Interactive Mermaid.js architecture blueprints &mdash; adapts to your active theme.
+        </p>
+      </div>
+
+      <div id="diagrams-container" class="space-y-6">
+        <!-- Diagrams are dynamically rendered here via JS -->
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 2: REUSABLE CLAUDE CODE PROMPT TEMPLATES          -->
+    <!-- ========================================================= -->
+    <section id="prompts" class="scroll-mt-24 space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 02</p>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">
+            Reusable Claude Code Prompt Templates
+          </h2>
+        </div>
+
+        <!-- Progress Bar + Reset -->
+        <div class="no-print flex items-center gap-3">
+          <div class="flex items-center gap-2">
+            <div class="w-28 h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+              <div id="progress-bar-fill" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <span id="progress-label" class="text-xs font-semibold text-slate-600 dark:text-slate-300 tabular-nums">0/7 done</span>
+          </div>
+          <button
+            id="reset-progress-btn"
+            type="button"
+            class="text-xs font-medium text-slate-500 hover:text-rose-500 dark:text-slate-400 dark:hover:text-rose-400 transition-colors cursor-pointer"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Setup Intro Callout -->
+      <div class="rounded-2xl border border-indigo-200/80 dark:border-indigo-500/25 bg-indigo-50/70 dark:bg-indigo-950/30 p-4 sm:p-5 flex items-start gap-3.5 print-card">
+        <div class="shrink-0 w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mt-0.5">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+          </svg>
+        </div>
+        <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+          Drop your clean A-cut (<code class="font-mono text-xs px-1.5 py-0.5 rounded-md bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300">a-cut.mp4</code>), its timecoded Whisper transcript (<code class="font-mono text-xs px-1.5 py-0.5 rounded-md bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300">transcript.srt</code> or <code class="font-mono text-xs px-1.5 py-0.5 rounded-md bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300">transcript.json</code>), your brand assets (logo, hex codes, fonts), and any UI screenshots into a single local project folder, then run these prompts in order inside <strong>Claude Code</strong>.
+        </p>
+      </div>
+
+      <!-- Compact Quick Variables Bar -->
+      <div class="no-print rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 sm:p-5 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+            </svg>
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Quick Variables</h3>
+            <span class="text-xs text-slate-500 dark:text-slate-400 hidden sm:inline">&mdash; Live-substitutes placeholders across all 7 prompts</span>
+          </div>
+          <button
+            id="reset-vars-btn"
+            type="button"
+            class="text-xs font-medium text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-colors cursor-pointer"
+          >
+            Reset defaults
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          <!-- Framework -->
+          <div>
+            <label for="var-framework" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+              Framework
+            </label>
+            <select
+              id="var-framework"
+              class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+            >
+              <option value="Remotion">Remotion</option>
+              <option value="Hyperframes">Hyperframes</option>
+              <option value="Remotion / Hyperframes">Remotion / Hyperframes</option>
+            </select>
+          </div>
+
+          <!-- Script Length -->
+          <div>
+            <label for="var-length" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+              Script Length
+            </label>
+            <input
+              id="var-length"
+              type="text"
+              value="45-second"
+              placeholder="45-second"
+              class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+            />
+          </div>
+
+          <!-- Product / Topic -->
+          <div>
+            <label for="var-topic" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+              Product / Topic
+            </label>
+            <input
+              id="var-topic"
+              type="text"
+              value=""
+              placeholder="e.g., Acme AI Launch"
+              class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+            />
+          </div>
+
+          <!-- Brand Style / Vibe -->
+          <div>
+            <label for="var-brand" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+              Brand Style / Vibe
+            </label>
+            <input
+              id="var-brand"
+              type="text"
+              value=""
+              placeholder="clean editorial, minimal SaaS..."
+              class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+            />
+          </div>
+
+          <!-- PiP Corner -->
+          <div>
+            <label for="var-pip" class="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+              PiP Corner
+            </label>
+            <select
+              id="var-pip"
+              class="w-full px-3 py-2 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+            >
+              <option value="bottom-left" selected>bottom-left</option>
+              <option value="bottom-right">bottom-right</option>
+              <option value="top-left">top-left</option>
+              <option value="top-right">top-right</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prompt Step Cards Container -->
+      <div id="prompts-container" class="space-y-5">
+        <!-- 7 Prompt Steps rendered dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 3: CORE MENTAL MODEL                              -->
+    <!-- ========================================================= -->
+    <section id="mental-model" class="scroll-mt-24 space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 03</p>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">
+            Core Mental Model
+          </h2>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+          Five principles for getting professional-grade video results from coding agents.
+        </p>
+      </div>
+
+      <div id="mental-model-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- 5 Mental Model Cards rendered dynamically via JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="no-print border-t border-slate-200 dark:border-slate-800 mt-16 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
+      <p>AI Video Editing Playbook &middot; Built for Claude Code + Remotion / Hyperframes workflows.</p>
+      <p>Progress &amp; Quick Variables are saved locally in your browser.</p>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div
+    id="toast"
+    role="status"
+    aria-live="polite"
+    class="no-print fixed bottom-5 right-5 z-50 pointer-events-none opacity-0 translate-y-2 transition-all duration-200"
+  >
+    <div class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-medium shadow-xl border border-slate-700 dark:border-slate-200">
+      <svg class="w-4 h-4 text-emerald-400 dark:text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+      </svg>
+      <span id="toast-message">Copied to clipboard!</span>
+    </div>
+  </div>
+
+  <!-- Application Logic -->
+  <script>
+    (function () {
+      'use strict';
+
+      // =========================================================================
+      // 1. PLAYBOOK DATA DEFINITIONS
+      // =========================================================================
+
+      const DIAGRAMS = [
+        {
+          id: 'diagram-1',
+          badge: 'Diagram 1',
+          title: 'The End-to-End Hybrid Workflow',
+          description:
+            'Maps the full pipeline from raw take to final video: clean human A-cut first, code-generated motion plates second, and audio layered last.',
+          code: `flowchart TD
+    A["Raw 5-Min Take"] --> B["Claude Distills Tight 45s Script"]
+    B --> C["Film Short Script"]
+    C --> D["Rough Cut via FireCut + Manual Polish in Resolve"]
+    D --> E["Export Clean A-Cut"]
+    E --> F["Whisper Transcription (Exact Timecodes)"]
+
+    F --> G1["Claude Code + Hyperframes"]
+    F --> G2["Claude Code + Remotion"]
+
+    G1 --> H["Generate Animated Motion Plates (B-Roll)"]
+    G2 --> H
+
+    H --> I["Composite Plates onto A-Cut"]
+    I --> J{"Review V1 (~85% Quality)"}
+
+    J -->|"Steering Prompts (PiP, fix bugs, tweak style)"| H
+    J -->|"Visuals Locked"| K["Layer Music & SFX (Epidemic Sound API)"]
+
+    K --> L{"Late Rebrand / Logo Change?"}
+    L -->|"Yes: Pass New Asset"| M["Agent Updates Design System & Re-renders Plates"]
+    M --> N["Final Video (~97% Human Quality)"]
+    L -->|"No"| N`,
+        },
+        {
+          id: 'diagram-2',
+          badge: 'Diagram 2',
+          title: 'Mental Model — Human vs. AI Division of Labor',
+          description:
+            'Separates fast human editorial judgment (script, pacing, visual taste) from heavy, repetitive motion-graphics engineering handled by agents.',
+          code: `flowchart LR
+    subgraph Human["Human Director (Taste & Foundation)"]
+        H1["Write & Film Tight Script"]
+        H2["Nail Clean A-Cut Pacing"]
+        H3["Give Visual Direction (e.g., Loom-style PiP)"]
+        H4["Final Quality Control & Polish"]
+    end
+
+    subgraph Agents["AI Coding Agents (Heavy Lifting & Scale)"]
+        A1["Build Motion Plates as Code"]
+        A2["Sync Graphics to Transcript Timecodes"]
+        A3["Pull & Layer Audio via API"]
+        A4["Global Rebrand / Style Reskin"]
+    end
+
+    H1 --> H2
+    H2 -->|"Clean Transcript"| A1
+    A1 --> A2
+    A2 -->|"Review MP4"| H3
+    H3 -->|"20-Shotting Prompts"| A1
+    A2 --> A3
+    H3 -->|"New Logo / Colors"| A4
+    A3 --> H4
+    A4 --> H4`,
+        },
+        {
+          id: 'diagram-3',
+          badge: 'Diagram 3',
+          title: 'The "20-Shotting" & Video-as-Code Loop',
+          description:
+            'Illustrates the iterative back-and-forth with Claude Code—reviewing short MP4 drafts, sending targeted notes, and reskinning globally via code.',
+          code: `sequenceDiagram
+    actor Human as Human Director
+    participant Agent as Claude Code (Agent)
+    participant Code as Hyperframes / Remotion (Video-as-Code)
+
+    Human->>Agent: Provide clean A-cut + Whisper transcript
+    Agent->>Code: Write animation code for 9 motion plates
+    Code-->>Human: Render V1 Review MP4 (~85% there)
+
+    loop "20-Shotting" Polish
+        Human->>Agent: Minor steering prompt (e.g., "Make it picture-in-picture, drop gradients")
+        Agent->>Code: Refactor layout & styling code
+        Code-->>Human: Render updated MP4
+    end
+
+    Human->>Agent: Add background music & SFX (Epidemic Sound API)
+    Agent->>Code: Sync audio layers to plate transitions
+
+    Note over Human,Code: Late-stage curveball: Co-founder sends a new logo at 90% done
+    Human->>Agent: "Update colors, fonts, and vibe to match this new logo"
+    Agent->>Code: Globally update design tokens & re-render all plates
+    Code-->>Human: Final Reskinned MP4 (~97% quality)`,
+        },
+      ];
+
+      const PROMPT_STEPS = [
+        {
+          step: 1,
+          title: 'Initialize the workspace and verify the pipeline',
+          badge: 'Run once per project',
+          description:
+            'Set up your chosen framework (Remotion or Hyperframes) and verify dependencies before generating real scenes.',
+          template: `We are building a talking-head + motion-graphics video using {{FRAMEWORK}}.
+
+Project folder contents:
+- Clean A-cut: ./assets/a-cut.mp4
+- Timecoded transcript: ./assets/transcript.[srt/json]
+- Brand assets & UI screenshots: ./assets/brand/ and ./assets/ui/
+
+First:
+1. Check that ffmpeg, Node, and {{FRAMEWORK}} dependencies are installed.
+2. Inspect ./assets/a-cut.mp4 to match our project's resolution, aspect ratio, and frame rate exactly.
+3. Run a quick 5-second test render to verify the pipeline works. Do not build any real scenes yet.`,
+        },
+        {
+          step: 2,
+          title: 'Distill a tight script from a long take',
+          badge: 'Skip if you already filmed a short A-cut',
+          description:
+            'If you recorded a rambling take, have Claude cut the script first so you can re-film a clean, short A-cut instead of asking the agent to edit raw footage.',
+          template: `Read ./assets/raw-transcript.txt. Distill this into a punchy, word-for-word {{LENGTH}} script for {{TOPIC}}.
+- Keep my natural phrasing and tone.
+- Structure: Hook (0-5s) -> Problem (5-15s) -> Solution & 2-3 key features (15-35s) -> CTA (35-45s).
+- Output only the spoken script so I can film a clean A-cut.`,
+        },
+        {
+          step: 3,
+          title: 'Generate a storyboard and static contact sheet',
+          badge: 'Approve visuals before animating',
+          description:
+            'Force the agent to show the visual plan as static frames first—fixing design issues here takes seconds instead of waiting on full video renders.',
+          template: `Read ./assets/transcript.[srt/json] and review the screenshots in ./assets/ui/.
+
+Before writing any animation code:
+1. Propose a shot-by-shot storyboard mapping exact transcript timecodes to 3–8 second "motion plates" (self-contained animated UI/graphic overlays).
+2. Match our brand style: {{BRAND}} using the assets in ./assets/brand/.
+3. Render a static contact sheet (keyframe PNGs) of all proposed motion plates so I can review the layout, typography, and colors before you animate anything.`,
+        },
+        {
+          step: 4,
+          title: 'Build motion plates and composite the V1 review cut',
+          badge: null,
+          description:
+            'Once you approve the contact sheet, have the agent code the animations and sync them onto your talking-head track. Leave music and sound effects out of this pass.',
+          template: `The contact sheet is approved [with these tweaks: list any font/color/image fixes].
+
+Now:
+1. Build each motion plate as its own modular component/file with clean transitions, zooms, and pans against our real UI screenshots.
+2. Composite all motion plates over ./assets/a-cut.mp4 at the exact transcript timecodes.
+3. Do NOT add background music or sound effects yet.
+4. Render a V1 review MP4 (./out/v1-review.mp4) and list the exact timecodes where each plate starts and ends.`,
+        },
+        {
+          step: 5,
+          title: 'Run the "20-shotting" visual polish loop',
+          badge: 'Repeat in short, targeted passes',
+          description:
+            'Watch v1-review.mp4 and send small, specific directing notes—one or two fixes per prompt—until the visuals feel 90%+ ready.',
+          template: `Review feedback on ./out/v1-review.mp4:
+- Layout: Switch full-screen graphics to a Loom-style picture-in-picture layout so my talking head stays visible in the {{PIP}} corner.
+- Anti-slop: Remove generic glowing gradients and solid flat backgrounds; use [real photography / subtle texture / clean white].
+- Bug fixes: Fix the flash frame at [00:14] and tighten the entrance animation on Plate [3] so it hits right on the word "[keyword]".
+- Pacing: Add more visual momentum in the first 5 seconds.
+
+Update the code and render ./out/v2-review.mp4.`,
+        },
+        {
+          step: 6,
+          title: 'Layer background music and sound design',
+          badge: null,
+          description:
+            'Add audio only after the visual cuts and animations are locked so the SFX hit the exact transition frames.',
+          template: `The visual edit in ./out/v[X]-review.mp4 is locked. Now add the audio layer:
+1. Add background music from [./assets/audio/track.mp3 OR Epidemic Sound API] ducked under my voice so dialogue stays crisp and clear.
+2. Add subtle sound effects (whooshes, soft pops, UI clicks) timed to each motion plate entrance and major on-screen animation.
+3. Keep SFX understated—never louder than the voiceover.
+4. Render ./out/v[X]-audio.mp4 for review.`,
+        },
+        {
+          step: 7,
+          title: 'Apply a global design reskin',
+          badge: 'Optional — for late brand changes or new videos',
+          description:
+            'Take advantage of video-as-code to swap branding across every motion plate in a single pass.',
+          template: `I just added an updated logo and brand kit to ./assets/brand/new-logo.png.
+
+Extract the new color palette and visual vibe, update our centralized design tokens/styles across all motion plates, and re-render the final MP4 (./out/final-reskinned.mp4) without changing any timing or animations.`,
+        },
+      ];
+
+      const MENTAL_MODEL_CARDS = [
+        {
+          number: '01',
+          title: "Don't give AI a job you wouldn't give a human editor",
+          body: 'If you want a short video, film a short script instead of asking an agent to carve a 45s story out of 5 minutes of rambling footage.',
+          accent: 'from-indigo-500 to-blue-500',
+        },
+        {
+          number: '02',
+          title: 'Separate "easy human work" from "hard agent work"',
+          body: 'Nail the clean talking-head A-cut yourself in a traditional editor, and offload bespoke animated UI graphics and motion plates to coding agents.',
+          accent: 'from-violet-500 to-purple-500',
+        },
+        {
+          number: '03',
+          title: 'Layer sequentially ("20-shotting", not one-shotting)',
+          body: 'Avoid asking for motion plates, music, and SFX all at once. Direct the agent with short, taste-driven steering prompts while it renders in the background.',
+          accent: 'from-emerald-500 to-teal-500',
+        },
+        {
+          number: '04',
+          title: 'Video-as-code makes changing your mind cheap',
+          body: 'Late-stage rebrands or logo swaps update globally via design tokens, and you keep the reusable codebase for future videos.',
+          accent: 'from-amber-500 to-orange-500',
+        },
+        {
+          number: '05',
+          title: 'Human + AI is the sweet spot',
+          body: 'Use agents to generate motion-graphics foundations and rough cuts (even overnight), letting human taste handle the final polish.',
+          accent: 'from-rose-500 to-pink-500',
+        },
+      ];
+
+      // =========================================================================
+      // 2. STATE MANAGEMENT & LOCAL STORAGE
+      // =========================================================================
+
+      const STORAGE_KEYS = {
+        theme: 'ai_video_playbook_theme',
+        completed: 'ai_video_playbook_completed_steps',
+        vars: 'ai_video_playbook_quick_vars',
+      };
+
+      const DEFAULT_VARS = {
+        framework: 'Remotion',
+        length: '45-second',
+        topic: '',
+        brand: '',
+        pip: 'bottom-left',
+      };
+
+      let completedSteps = {};
+      let quickVars = { ...DEFAULT_VARS };
+      let toastTimer = null;
+
+      function loadState() {
+        try {
+          const savedCompleted = localStorage.getItem(STORAGE_KEYS.completed);
+          if (savedCompleted) {
+            completedSteps = JSON.parse(savedCompleted) || {};
+          }
+          const savedVars = localStorage.getItem(STORAGE_KEYS.vars);
+          if (savedVars) {
+            quickVars = { ...DEFAULT_VARS, ...(JSON.parse(savedVars) || {}) };
+          }
+          const savedTheme = localStorage.getItem(STORAGE_KEYS.theme);
+          if (savedTheme === 'light') {
+            document.documentElement.classList.remove('dark');
+          } else {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (err) {
+          console.warn('LocalStorage unavailable, using in-memory state.', err);
+        }
+      }
+
+      function saveCompleted() {
+        try {
+          localStorage.setItem(STORAGE_KEYS.completed, JSON.stringify(completedSteps));
+        } catch (err) {
+          console.warn('Could not save completion state.', err);
+        }
+      }
+
+      function saveVars() {
+        try {
+          localStorage.setItem(STORAGE_KEYS.vars, JSON.stringify(quickVars));
+        } catch (err) {
+          console.warn('Could not save quick variables.', err);
+        }
+      }
+
+      // =========================================================================
+      // 3. UTILITIES: ESCAPE HTML, CLIPBOARD, TOAST
+      // =========================================================================
+
+      function escapeHtml(str) {
+        return str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById('toast');
+        const msgEl = document.getElementById('toast-message');
+        if (!toast || !msgEl) return;
+
+        msgEl.textContent = message;
+        toast.classList.remove('opacity-0', 'translate-y-2');
+        toast.classList.add('opacity-100', 'translate-y-0');
+
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-2');
+          toast.classList.remove('opacity-100', 'translate-y-0');
+        }, 2200);
+      }
+
+      /**
+       * Reliable clipboard copy using document.execCommand('copy')
+       * for maximum compatibility inside sandboxed iframes.
+       */
+      function copyToClipboard(text, buttonEl, defaultLabel) {
+        try {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'fixed';
+          textarea.style.top = '-9999px';
+          textarea.style.left = '-9999px';
+          document.body.appendChild(textarea);
+          textarea.select();
+          textarea.setSelectionRange(0, textarea.value.length);
+          const success = document.execCommand('copy');
+          document.body.removeChild(textarea);
+
+          if (success) {
+            showToast('Copied to clipboard!');
+            if (buttonEl) {
+              const labelSpan = buttonEl.querySelector('.btn-label');
+              if (labelSpan) {
+                labelSpan.textContent = 'Copied!';
+                buttonEl.classList.add('!bg-emerald-600', '!text-white', '!border-emerald-500');
+                setTimeout(() => {
+                  labelSpan.textContent = defaultLabel;
+                  buttonEl.classList.remove('!bg-emerald-600', '!text-white', '!border-emerald-500');
+                }, 1800);
+              }
+            }
+          } else {
+            showToast('Unable to copy automatically.');
+          }
+        } catch (err) {
+          console.error('Copy failed:', err);
+          showToast('Copy failed. Please select text manually.');
+        }
+      }
+
+      // =========================================================================
+      // 4. MERMAID DIAGRAM RENDERING (THEME-AWARE)
+      // =========================================================================
+
+      function buildDiagramCards() {
+        const container = document.getElementById('diagrams-container');
+        if (!container) return;
+
+        container.innerHTML = DIAGRAMS.map(
+          (d) => `
+          <article class="print-break-avoid print-card rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 shadow-sm overflow-hidden">
+            <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300">
+                    ${escapeHtml(d.badge)}
+                  </span>
+                  <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                    ${escapeHtml(d.title)}
+                  </h3>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  ${escapeHtml(d.description)}
+                </p>
+              </div>
+              <button
+                type="button"
+                data-copy-diagram="${d.id}"
+                class="no-print inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                </svg>
+                <span class="btn-label">Copy Mermaid Code</span>
+              </button>
+            </div>
+            <div class="p-4 sm:p-6 overflow-x-auto custom-scroll bg-white dark:bg-slate-950/60">
+              <div id="mermaid-target-${d.id}" class="mermaid-output min-h-[160px] flex items-center justify-center">
+                <span class="text-xs text-slate-400">Rendering diagram...</span>
+              </div>
+            </div>
+          </article>
+        `
+        ).join('');
+
+        // Attach Copy Mermaid Code handlers
+        container.querySelectorAll('[data-copy-diagram]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const diagram = DIAGRAMS.find((item) => item.id === btn.dataset.copyDiagram);
+            if (diagram) {
+              copyToClipboard(diagram.code, btn, 'Copy Mermaid Code');
+            }
+          });
+        });
+      }
+
+      let mermaidRenderCounter = 0;
+
+      async function renderAllMermaidDiagrams() {
+        if (typeof mermaid === 'undefined') {
+          DIAGRAMS.forEach((d) => {
+            const target = document.getElementById(`mermaid-target-${d.id}`);
+            if (target) {
+              target.innerHTML = `<pre class="text-xs font-mono text-left p-3 rounded-xl bg-slate-100 dark:bg-slate-900 overflow-x-auto">${escapeHtml(d.code)}</pre>`;
+            }
+          });
+          return;
+        }
+
+        const isDark = document.documentElement.classList.contains('dark');
+
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: 'loose',
+          theme: isDark ? 'dark' : 'default',
+          fontFamily: 'Inter, system-ui, sans-serif',
+          flowchart: {
+            useMaxWidth: true,
+            htmlLabels: true,
+            curve: 'basis',
+          },
+          sequence: {
+            useMaxWidth: true,
+            actorMargin: 50,
+            messageMargin: 35,
+          },
+          themeVariables: isDark
+            ? {
+                primaryColor: '#312e81',
+                primaryTextColor: '#f8fafc',
+                primaryBorderColor: '#6366f1',
+                lineColor: '#94a3b8',
+                secondaryColor: '#1e293b',
+                tertiaryColor: '#0f172a',
+                background: '#070b14',
+                mainBkg: '#1e293b',
+                nodeBorder: '#6366f1',
+                clusterBkg: '#0f172a',
+                clusterBorder: '#334155',
+                actorBkg: '#1e293b',
+                actorBorder: '#6366f1',
+                actorTextColor: '#f8fafc',
+                signalColor: '#cbd5e1',
+                signalTextColor: '#f8fafc',
+                noteBkgColor: '#312e81',
+                noteTextColor: '#e0e7ff',
+                noteBorderColor: '#6366f1',
+              }
+            : {
+                primaryColor: '#eef2ff',
+                primaryTextColor: '#0f172a',
+                primaryBorderColor: '#6366f1',
+                lineColor: '#475569',
+                secondaryColor: '#f8fafc',
+                tertiaryColor: '#f1f5f9',
+                actorBkg: '#eef2ff',
+                actorBorder: '#6366f1',
+                actorTextColor: '#0f172a',
+                noteBkgColor: '#fef3c7',
+                noteTextColor: '#78350f',
+                noteBorderColor: '#f59e0b',
+              },
+        });
+
+        for (const d of DIAGRAMS) {
+          const target = document.getElementById(`mermaid-target-${d.id}`);
+          if (!target) continue;
+          try {
+            mermaidRenderCounter += 1;
+            const renderId = `mmd-${d.id}-${mermaidRenderCounter}`;
+            const { svg } = await mermaid.render(renderId, d.code);
+            target.innerHTML = svg;
+          } catch (err) {
+            console.error(`Error rendering ${d.id}:`, err);
+            target.innerHTML = `<div class="text-xs text-rose-500 p-3">Could not render diagram. Showing raw Mermaid source:</div><pre class="text-xs font-mono p-3 rounded-xl bg-slate-100 dark:bg-slate-900 overflow-x-auto">${escapeHtml(d.code)}</pre>`;
+          }
+        }
+      }
+
+      // =========================================================================
+      // 5. PROMPT TEMPLATES & DYNAMIC VARIABLE SUBSTITUTION
+      // =========================================================================
+
+      function getResolvedVariables() {
+        return {
+          FRAMEWORK: quickVars.framework.trim() || '[Remotion / Hyperframes]',
+          LENGTH: quickVars.length.trim() || '[45-second]',
+          TOPIC: quickVars.topic.trim() || '[Product/Topic]',
+          BRAND:
+            quickVars.brand.trim() ||
+            '[clean editorial, minimal SaaS, high-contrast dark mode]',
+          PIP: quickVars.pip.trim() || '[bottom-left]',
+        };
+      }
+
+      /**
+       * Returns plain text prompt with substituted variables (for copying)
+       */
+      function getPlainPrompt(template) {
+        const vals = getResolvedVariables();
+        return template
+          .replace(/\{\{FRAMEWORK\}\}/g, vals.FRAMEWORK)
+          .replace(/\{\{LENGTH\}\}/g, vals.LENGTH)
+          .replace(/\{\{TOPIC\}\}/g, vals.TOPIC)
+          .replace(/\{\{BRAND\}\}/g, vals.BRAND)
+          .replace(/\{\{PIP\}\}/g, vals.PIP);
+      }
+
+      /**
+       * Returns HTML-formatted prompt with highlighted variable tokens
+       */
+      function getHighlightedPromptHtml(template) {
+        const vals = getResolvedVariables();
+        let html = escapeHtml(template);
+
+        const wrapToken = (value, isCustom) => {
+          const classes = isCustom
+            ? 'px-1.5 py-0.5 rounded-md bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-500/30'
+            : 'px-1 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 font-medium';
+          return `<span class="${classes}">${escapeHtml(value)}</span>`;
+        };
+
+        html = html
+          .replace(
+            /\{\{FRAMEWORK\}\}/g,
+            wrapToken(vals.FRAMEWORK, Boolean(quickVars.framework.trim()))
+          )
+          .replace(
+            /\{\{LENGTH\}\}/g,
+            wrapToken(vals.LENGTH, Boolean(quickVars.length.trim()))
+          )
+          .replace(
+            /\{\{TOPIC\}\}/g,
+            wrapToken(vals.TOPIC, Boolean(quickVars.topic.trim()))
+          )
+          .replace(
+            /\{\{BRAND\}\}/g,
+            wrapToken(vals.BRAND, Boolean(quickVars.brand.trim()))
+          )
+          .replace(
+            /\{\{PIP\}\}/g,
+            wrapToken(vals.PIP, Boolean(quickVars.pip.trim()))
+          );
+
+        return html;
+      }
+
+      function updateProgressUI() {
+        const total = PROMPT_STEPS.length;
+        const doneCount = PROMPT_STEPS.filter((s) => Boolean(completedSteps[s.step])).length;
+        const pct = Math.round((doneCount / total) * 100);
+
+        const bar = document.getElementById('progress-bar-fill');
+        const label = document.getElementById('progress-label');
+        const heroCount = document.getElementById('hero-progress-count');
+
+        if (bar) bar.style.width = `${pct}%`;
+        if (label) label.textContent = `${doneCount}/${total} done`;
+        if (heroCount) heroCount.textContent = `${doneCount} / ${total}`;
+      }
+
+      function renderPromptCards() {
+        const container = document.getElementById('prompts-container');
+        if (!container) return;
+
+        container.innerHTML = PROMPT_STEPS.map((item) => {
+          const isChecked = Boolean(completedSteps[item.step]);
+          return `
+            <article
+              data-step-card="${item.step}"
+              class="print-break-avoid print-card rounded-2xl border transition-all duration-200 ${
+                isChecked
+                  ? 'border-emerald-300/80 dark:border-emerald-500/40 bg-emerald-50/30 dark:bg-emerald-950/10'
+                  : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80'
+              } shadow-sm overflow-hidden"
+            >
+              <!-- Card Header -->
+              <div class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-slate-200/80 dark:border-slate-800/80">
+                <div class="flex items-start gap-3.5">
+                  <!-- Completion Checkbox -->
+                  <label class="no-print relative flex items-center justify-center mt-0.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      data-step-checkbox="${item.step}"
+                      ${isChecked ? 'checked' : ''}
+                      aria-label="Mark Step ${item.step} complete"
+                      class="peer sr-only"
+                    />
+                    <span class="w-6 h-6 rounded-lg border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 peer-checked:bg-emerald-500 peer-checked:border-emerald-500 flex items-center justify-center transition-colors">
+                      <svg class="w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                    </span>
+                  </label>
+
+                  <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-bold font-mono ${
+                        isChecked
+                          ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
+                          : 'bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'
+                      }">
+                        Step ${item.step}
+                      </span>
+                      <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white ${
+                        isChecked ? 'line-through decoration-emerald-500/60 opacity-80' : ''
+                      }">
+                        ${escapeHtml(item.title)}
+                      </h3>
+                      ${
+                        item.badge
+                          ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">${escapeHtml(
+                              item.badge
+                            )}</span>`
+                          : ''
+                      }
+                    </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">
+                      ${escapeHtml(item.description)}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Copy Prompt Button -->
+                <button
+                  type="button"
+                  data-copy-step="${item.step}"
+                  class="no-print shrink-0 self-start inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-500 shadow-sm shadow-indigo-500/20 transition-all cursor-pointer"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                  </svg>
+                  <span class="btn-label">Copy Prompt</span>
+                </button>
+              </div>
+
+              <!-- Prompt Code Block -->
+              <div class="p-4 sm:p-5 bg-slate-50 dark:bg-slate-950/75">
+                <pre
+                  id="prompt-code-${item.step}"
+                  class="font-mono text-xs sm:text-[13px] leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap break-words overflow-x-auto custom-scroll"
+                >${getHighlightedPromptHtml(item.template)}</pre>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        // Wire up checkboxes
+        container.querySelectorAll('[data-step-checkbox]').forEach((checkbox) => {
+          checkbox.addEventListener('change', (e) => {
+            const stepNum = Number(e.target.dataset.stepCheckbox);
+            completedSteps[stepNum] = e.target.checked;
+            saveCompleted();
+            renderPromptCards();
+            updateProgressUI();
+          });
+        });
+
+        // Wire up Copy Prompt buttons
+        container.querySelectorAll('[data-copy-step]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const stepNum = Number(btn.dataset.copyStep);
+            const stepObj = PROMPT_STEPS.find((s) => s.step === stepNum);
+            if (stepObj) {
+              const plainText = getPlainPrompt(stepObj.template);
+              copyToClipboard(plainText, btn, 'Copy Prompt');
+            }
+          });
+        });
+      }
+
+      /**
+       * Fast live update of prompt text without re-rendering full DOM cards
+       */
+      function refreshPromptCodeBlocks() {
+        PROMPT_STEPS.forEach((item) => {
+          const pre = document.getElementById(`prompt-code-${item.step}`);
+          if (pre) {
+            pre.innerHTML = getHighlightedPromptHtml(item.template);
+          }
+        });
+      }
+
+      // =========================================================================
+      // 6. MENTAL MODEL CARDS
+      // =========================================================================
+
+      function renderMentalModelCards() {
+        const container = document.getElementById('mental-model-container');
+        if (!container) return;
+
+        container.innerHTML = MENTAL_MODEL_CARDS.map(
+          (card) => `
+          <article class="print-break-avoid print-card group relative rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-500/40 transition-all">
+            <div class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br ${card.accent} text-white font-mono text-sm font-bold shadow-md mb-4">
+              ${card.number}
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug">
+              ${escapeHtml(card.title)}
+            </h3>
+            <p class="mt-2.5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              ${escapeHtml(card.body)}
+            </p>
+          </article>
+        `
+        ).join('');
+      }
+
+      // =========================================================================
+      // 7. QUICK VARIABLES INPUT BINDING & CONTROLS
+      // =========================================================================
+
+      function syncInputsFromState() {
+        document.getElementById('var-framework').value = quickVars.framework;
+        document.getElementById('var-length').value = quickVars.length;
+        document.getElementById('var-topic').value = quickVars.topic;
+        document.getElementById('var-brand').value = quickVars.brand;
+        document.getElementById('var-pip').value = quickVars.pip;
+      }
+
+      function initQuickVariables() {
+        syncInputsFromState();
+
+        const bindings = [
+          { id: 'var-framework', key: 'framework', event: 'change' },
+          { id: 'var-length', key: 'length', event: 'input' },
+          { id: 'var-topic', key: 'topic', event: 'input' },
+          { id: 'var-brand', key: 'brand', event: 'input' },
+          { id: 'var-pip', key: 'pip', event: 'change' },
+        ];
+
+        bindings.forEach(({ id, key, event }) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener(event, (e) => {
+            quickVars[key] = e.target.value;
+            saveVars();
+            refreshPromptCodeBlocks();
+          });
+        });
+
+        const resetVarsBtn = document.getElementById('reset-vars-btn');
+        if (resetVarsBtn) {
+          resetVarsBtn.addEventListener('click', () => {
+            quickVars = { ...DEFAULT_VARS };
+            saveVars();
+            syncInputsFromState();
+            refreshPromptCodeBlocks();
+            showToast('Quick Variables reset to defaults.');
+          });
+        }
+
+        const resetProgressBtn = document.getElementById('reset-progress-btn');
+        if (resetProgressBtn) {
+          resetProgressBtn.addEventListener('click', () => {
+            completedSteps = {};
+            saveCompleted();
+            renderPromptCards();
+            updateProgressUI();
+            showToast('Checklist progress cleared.');
+          });
+        }
+      }
+
+      // =========================================================================
+      // 8. THEME TOGGLE, PRINT, DOWNLOAD HTML & SCROLL-SPY NAV
+      // =========================================================================
+
+      function initToolbarControls() {
+        // Dark / Light Mode Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+          themeToggle.addEventListener('click', () => {
+            const isDarkNow = document.documentElement.classList.toggle('dark');
+            try {
+              localStorage.setItem(STORAGE_KEYS.theme, isDarkNow ? 'dark' : 'light');
+            } catch (err) {
+              console.warn('Could not persist theme preference.', err);
+            }
+            renderAllMermaidDiagrams();
+          });
+        }
+
+        // Print Button
+        const printBtn = document.getElementById('print-btn');
+        if (printBtn) {
+          printBtn.addEventListener('click', () => {
+            window.print();
+          });
+        }
+
+        // Download Standalone HTML Button
+        const downloadBtn = document.getElementById('download-btn');
+        if (downloadBtn) {
+          downloadBtn.addEventListener('click', () => {
+            try {
+              const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+              const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = 'ai-video-editing-playbook.html';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              URL.revokeObjectURL(url);
+              showToast('Downloaded ai-video-editing-playbook.html');
+            } catch (err) {
+              console.error('Download failed:', err);
+              showToast('Unable to download file.');
+            }
+          });
+        }
+      }
+
+      function initScrollSpy() {
+        const sections = ['diagrams', 'prompts', 'mental-model'];
+        const navLinks = document.querySelectorAll('[data-nav-link]');
+
+        function setActiveNav(activeId) {
+          navLinks.forEach((link) => {
+            const isMatch = link.dataset.navLink === activeId;
+            if (isMatch) {
+              link.classList.add(
+                'bg-white',
+                'dark:bg-slate-800',
+                'text-indigo-600',
+                'dark:text-indigo-400',
+                'shadow-sm'
+              );
+              link.classList.remove('text-slate-600', 'dark:text-slate-300');
+            } else {
+              link.classList.remove(
+                'bg-white',
+                'dark:bg-slate-800',
+                'text-indigo-600',
+                'dark:text-indigo-400',
+                'shadow-sm'
+              );
+              link.classList.add('text-slate-600', 'dark:text-slate-300');
+            }
+          });
+        }
+
+        // Set default active tab
+        setActiveNav('diagrams');
+
+        if ('IntersectionObserver' in window) {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  setActiveNav(entry.target.id);
+                }
+              });
+            },
+            { rootMargin: '-25% 0px -60% 0px', threshold: 0.01 }
+          );
+
+          sections.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) observer.observe(el);
+          });
+        }
+
+        navLinks.forEach((link) => {
+          link.addEventListener('click', () => {
+            setActiveNav(link.dataset.navLink);
+          });
+        });
+      }
+
+      // =========================================================================
+      // 9. BOOTSTRAP APPLICATION
+      // =========================================================================
+
+      document.addEventListener('DOMContentLoaded', () => {
+        loadState();
+        buildDiagramCards();
+        renderPromptCards();
+        renderMentalModelCards();
+        updateProgressUI();
+        initQuickVariables();
+        initToolbarControls();
+        initScrollSpy();
+        renderAllMermaidDiagrams();
+      });
+    })();
+  </script>
+</body>
+</html>

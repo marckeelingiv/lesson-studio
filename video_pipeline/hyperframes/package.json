@@ -1,0 +1,14 @@
+{
+  "name": "lesson-studio-hyperframes",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "compose": "node src/compose.mjs",
+    "studio": "hyperframes preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "hyperframes": "^0.9.86"
+  }
+}

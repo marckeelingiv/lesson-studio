@@ -1,0 +1,315 @@
+/* HyperFrames Starter Asset Pack v0.1 — 5 Infographic & Framework Families
+ * Styled exclusively via tokens.css custom properties (dark & light themes, zero hardcoded colors).
+ */
+
+.hf-fw-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  height: 100%;
+}
+
+.hf-fw-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.hf-fw-stage {
+  flex: 1;
+  min-height: 0;
+  background-color: var(--bg-surface);
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* 1. Linear Steps */
+.hf-fw-linear-track {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.hf-fw-step-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.hf-fw-step-card {
+  flex: 1;
+  min-height: 360px;
+  background-color: var(--bg-surface-elevated);
+  border: var(--border-width) solid var(--border-subtle);
+  border-top: var(--accent-bar-width) solid var(--accent-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: var(--space-2);
+}
+
+.hf-fw-step-card.is-active {
+  border-color: var(--accent-primary);
+  border-width: 2px;
+  border-top-width: 6px;
+}
+
+.hf-fw-step-num {
+  font-family: var(--font-mono);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.hf-fw-step-title {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.22;
+  color: var(--text-primary);
+}
+
+.hf-fw-step-detail {
+  font-size: 28px;
+  line-height: 1.38;
+  color: var(--text-secondary);
+}
+
+.hf-fw-arrow {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  color: var(--accent-primary);
+}
+
+/* 2. Non-Linear Pillars */
+.hf-fw-pillars-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+}
+
+.hf-fw-hub-banner {
+  background-color: var(--bg-surface-elevated);
+  border: 2px solid var(--accent-primary);
+  border-radius: var(--radius-md);
+  padding: 20px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hf-fw-hub-label {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+}
+
+.hf-fw-hub-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.hf-fw-pillars-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-3);
+}
+
+.hf-fw-pillar-card {
+  background-color: var(--bg-surface-elevated);
+  border: var(--border-width) solid var(--border-subtle);
+  border-bottom: var(--accent-bar-width) solid var(--accent-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* 3. Cyclical Loop */
+.hf-fw-cycle-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px 1fr;
+  grid-template-rows: auto 240px auto;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+  justify-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.hf-fw-cycle-node {
+  width: 100%;
+  max-width: 520px;
+  background-color: var(--bg-surface-elevated);
+  border: var(--border-width) solid var(--border-strong);
+  border-left: var(--accent-bar-width) solid var(--accent-primary);
+  border-radius: var(--radius-md);
+  padding: 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hf-fw-cycle-node--top {
+  grid-column: 2;
+  grid-row: 1;
+  max-width: 540px;
+}
+
+.hf-fw-cycle-node--right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.hf-fw-cycle-node--bottom {
+  grid-column: 2;
+  grid-row: 3;
+  max-width: 540px;
+}
+
+.hf-fw-cycle-node--left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.hf-fw-cycle-ring {
+  grid-column: 2;
+  grid-row: 2;
+  width: 220px;
+  height: 220px;
+}
+
+/* 4. Hierarchical Tree */
+.hf-fw-tree-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  height: 100%;
+}
+
+.hf-fw-tree-root {
+  min-width: 520px;
+  background-color: var(--bg-surface-elevated);
+  border: 2px solid var(--accent-primary);
+  border-radius: var(--radius-md);
+  padding: 20px 36px;
+  text-align: center;
+}
+
+.hf-fw-tree-connectors {
+  width: 100%;
+  max-width: 1320px;
+  height: 76px;
+  display: block;
+}
+
+.hf-fw-tree-branches {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.hf-fw-tree-branch {
+  background-color: var(--bg-surface-elevated);
+  border: var(--border-width) solid var(--border-strong);
+  border-top: var(--accent-bar-width) solid var(--accent-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.hf-fw-tree-leaf {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-surface);
+  border: var(--border-width) solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: 28px;
+  color: var(--text-primary);
+}
+
+/* 5. Matrix 2x2 */
+.hf-fw-matrix-wrap {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  grid-template-rows: 1fr 56px;
+  gap: var(--space-2);
+  width: 100%;
+  height: 100%;
+}
+
+.hf-fw-matrix-yaxis {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.hf-fw-matrix-xaxis {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.hf-fw-matrix-grid {
+  grid-column: 2;
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.hf-fw-matrix-cell {
+  background-color: var(--bg-surface-elevated);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-1);
+}
+
+.hf-fw-matrix-cell.is-highlighted {
+  border: 2px solid var(--accent-primary);
+  border-left: 6px solid var(--accent-secondary);
+}

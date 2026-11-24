@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-theme="dark"
+  data-composition-variables='[
+    {"id":"theme","type":"enum","label":"Theme","default":"dark","options":[{"value":"dark","label":"Dark"},{"value":"light","label":"Light"}]},
+    {"id":"kicker","type":"string","label":"Kicker","default":"LIVE EVIDENCE WALKTHROUGH"},
+    {"id":"title","type":"string","label":"Title","default":"Inspecting Real Frame Deltas"},
+    {"id":"subtitle","type":"string","label":"Subtitle","default":"Speaker PiP stays anchored in a corner that never hides captions or disclosures."},
+    {"id":"pipCorner","type":"enum","label":"PiP Corner","default":"bottom-right","options":[{"value":"bottom-right","label":"Bottom Right"},{"value":"bottom-left","label":"Bottom Left"},{"value":"top-right","label":"Top Right"},{"value":"top-left","label":"Top Left"}]},
+    {"id":"mediaSrc","type":"string","label":"Media Source","default":""},
+    {"id":"speakerLabel","type":"string","label":"Speaker Label","default":"PiP"},
+    {"id":"transition","type":"enum","label":"Transition","default":"subtle","options":[{"value":"subtle","label":"Subtle"},{"value":"swipe","label":"Swipe"},{"value":"zoom","label":"Zoom"}]}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0" />
+    <title>Layout — Circle</title>
+    <link rel="stylesheet" href="../tokens/engineering-editorial/tokens.css" />
+    <link rel="stylesheet" href="../motion/transitions.css" />
+    <link rel="stylesheet" href="./layouts.css" />
+    <script src="../../../video_pipeline/hyperframes/node_modules/gsap/dist/gsap.min.js"></script>
+    <script src="../motion/mechanics.js"></script>
+  </head>
+  <body>
+    <div id="root" data-composition-id="layout-circle" data-width="1920" data-height="1080" data-duration="5">
+      <div class="hf-stage">
+        <div class="hf-safe-frame">
+          <div id="circle-layer" class="hf-transition-layer hf-layout-circle">
+            <div class="hf-circle-canvas">
+              <div>
+                <div class="hf-kicker">
+                  <span class="hf-kicker-rule" data-layout-ignore></span>
+                  <span id="circle-kicker">LIVE EVIDENCE WALKTHROUGH</span>
+                </div>
+                <h1 id="circle-title" class="hf-title">Inspecting Real Frame Deltas</h1>
+                <p id="circle-subtitle" class="hf-subtitle">
+                  Speaker PiP stays anchored in a corner that never hides captions or disclosures.
+                </p>
+              </div>
+              <div id="circle-media-box" class="hf-circle-media-box" data-slot="media">
+                <div id="circle-media-fallback" class="hf-fullscreen-placeholder">
+                  Screen Capture / Diagram Stage
+                </div>
+              </div>
+            </div>
+            <div id="circle-pip" class="hf-circle-pip hf-circle-pip--bottom-right" data-slot="speaker">
+              <span id="circle-pip-label" class="hf-circle-pip-label">PiP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var vars = window.LessonMotion.getVariables();
+        window.LessonMotion.applyTheme(vars.theme);
+        document.getElementById("circle-kicker").textContent = vars.kicker || "";
+        document.getElementById("circle-title").textContent = vars.title || "";
+        document.getElementById("circle-subtitle").textContent = vars.subtitle || "";
+        document.getElementById("circle-pip-label").textContent = vars.speakerLabel || "PiP";
+
+        var pip = document.getElementById("circle-pip");
+        pip.className = "hf-circle-pip hf-circle-pip--" + (vars.pipCorner || "bottom-right");
+
+        if (vars.mediaSrc) {
+          var box = document.getElementById("circle-media-box");
+          box.innerHTML = "";
+          var img = document.createElement("img");
+          img.src = vars.mediaSrc;
+          img.alt = vars.title || "Evidence Capture";
+          box.appendChild(img);
+        }
+
+        var tl = window.LessonMotion.createTimeline("layout-circle");
+        window.LessonMotion.applyTransition(tl, "#circle-layer", vars.transition || "subtle", { at: 0 });
+        window.LessonMotion.textEntrances(tl, ["#circle-title", "#circle-subtitle"], {
+          at: 0,
+          keepFrameZeroVisible: true
+        });
+        window.LessonMotion.circlesAndMarks(tl, "#circle-pip", { at: 0.1 });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["layout-circle"] = tl;
+      })();
+    </script>
+  </body>
+</html>
